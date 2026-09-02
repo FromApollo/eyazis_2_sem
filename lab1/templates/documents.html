@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Documents ({{ documents|length }})</h2>
+  <div>
+    <form action="{{ url_for('reindex') }}" method="post" class="d-inline">
+      <button class="btn btn-outline-secondary btn-sm">Rebuild index</button>
+    </form>
+    <a href="{{ url_for('add_document') }}" class="btn btn-primary btn-sm">Add document</a>
+  </div>
+</div>
+
+<table class="table table-hover align-middle">
+  <thead>
+    <tr><th>#</th><th>Title</th><th>Date</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for d in documents %}
+      <tr>
+        <td>{{ d.documentID }}</td>
+        <td><a href="{{ url_for('document_detail', doc_id=d.documentID) }}">{{ d.title }}</a></td>
+        <td>{{ d.date }}</td>
+        <td class="text-end">
+          <form action="{{ url_for('delete_document', doc_id=d.documentID) }}" method="post"
+                onsubmit="return confirm('Delete this document?');" class="d-inline">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="text-muted">No documents yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

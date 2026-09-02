@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Help{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-9">
+    <h2 class="mb-4">Help</h2>
+
+    <div class="accordion" id="helpAccordion">
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#h1">
+            What does this system do?
+          </button>
+        </h2>
+        <div id="h1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            This is an information retrieval (search) system built on the
+            <strong>vector space model</strong>. Every document is converted into a
+            vector of weighted terms (TF-IDF), and your search query is converted
+            into a similar vector. Results are ranked by how close each document's
+            vector is to your query's vector (cosine similarity) — the closer the
+            angle between them, the higher the rank.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h2">
+            How do I search?
+          </button>
+        </h2>
+        <div id="h2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            <ul>
+              <li>Go to the <a href="{{ url_for('index') }}">Search</a> page and type an English query — a few
+                  keywords work better than full sentences (e.g. <em>"vector space model cosine similarity"</em>).</li>
+              <li>Results are sorted from most to least relevant, with a snippet, the words from
+                  your query that were actually found in the document, and its date.</li>
+              <li><strong>Require all query words</strong> narrows results to documents containing
+                  every word from your query, instead of allowing partial matches.</li>
+              <li><strong>Date range</strong> filters results to documents added within the chosen
+                  From/To dates. Leave both blank to search all dates.</li>
+              <li>Click any result to open the full document and see its top-weighted index terms.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h3">
+            How do I add documents?
+          </button>
+        </h2>
+        <div id="h3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            Open <a href="{{ url_for('add_document') }}">Add document</a>. You can either:
+            <ul>
+              <li>paste text directly into the text box, or</li>
+              <li>upload a <strong>.pdf</strong>, <strong>.docx</strong>, or <strong>.txt</strong> file —
+                  its text is extracted automatically.</li>
+            </ul>
+            If you upload a file and leave the title blank, the file name is used as the title.
+            If you leave the text box blank, the extracted file text is used. New documents are
+            indexed immediately and become searchable right away.
+            <p class="mb-0 mt-2 text-muted">
+              Note: scanned PDFs that are just images of text (no selectable text layer) cannot
+              be read automatically — use a text-based PDF or paste the text manually instead.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h4">
+            Managing documents
+          </button>
+        </h2>
+        <div id="h4" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            The <a href="{{ url_for('document_list') }}">Documents</a> page lists everything in the
+            collection. You can delete a document there, or click <strong>Rebuild index</strong> to
+            recompute term weights for the whole collection (useful after deleting several
+            documents, since term weights depend on the full collection).
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h5">
+            What do the quality metrics mean?
+          </button>
+        </h2>
+        <div id="h5" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            The <a href="{{ url_for('metrics_page') }}">Quality metrics</a> page measures how well the
+            system ranks results, using the official ROMIP'2004 evaluation methodology, against a
+            built-in set of test queries with known correct answers:
+            <ul>
+              <li><strong>Precision</strong> — of everything the system returned, what share was actually relevant.</li>
+              <li><strong>Recall</strong> — of everything that was actually relevant, what share the system found.</li>
+              <li><strong>F-measure</strong> — a single score balancing precision and recall.</li>
+              <li><strong>Average Precision / MAP</strong> — rewards putting relevant documents near the
+                  top of the results, averaged across all test queries.</li>
+              <li><strong>Precision(5) / Precision(10)</strong> — accuracy of just the first 5 or 10 results
+                  (what a user would see on the first page).</li>
+              <li><strong>R-Precision</strong> — precision measured at exactly as many results as there are
+                  relevant documents for that query.</li>
+              <li><strong>11-point Precision/Recall curve</strong> — the standard TREC chart showing the
+                  trade-off between precision and recall.</li>
+            </ul>
+            Hover over the ⓘ icon next to any metric for a short definition.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h6">
+            Troubleshooting
+          </button>
+        </h2>
+        <div id="h6" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            <ul>
+              <li><strong>No results for my query</strong> — the system only matches whole words present in
+                  the collection; try simpler or different keywords, or turn off "Require all query words".</li>
+              <li><strong>My uploaded file didn't work</strong> — check it's a .pdf, .docx or .txt file, and
+                  that the PDF has real selectable text (not just a scanned image).</li>
+              <li><strong>Search results look outdated after deleting documents</strong> — click
+                  <strong>Rebuild index</strong> on the Documents page.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

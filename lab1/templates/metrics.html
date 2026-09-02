@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Quality metrics{% endblock %}
+{% block content %}
+<h2 class="mb-3">Quality Evaluation (ROMIP'2004 metric set)</h2>
+<p class="text-muted">
+  Computed against the built-in test collection (5 judged queries, relevance
+  ground truth defined in <code>data/test_collection.json</code>), using the
+  official metrics from <em>2004_romip_metrix.pdf</em> (М. Агеев, И. Кураленок):
+  recall, precision, average precision, precision(5), precision(10),
+  R-precision and the 11-point TREC interpolated precision/recall curve.
+  Metrics are computed per query, then microaveraged.
+</p>
+
+<div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">Precision
+      <span data-bs-toggle="tooltip" title="a/(a+b): share of all returned documents that are relevant.">ⓘ</span></div>
+    <div class="fs-4">{{ summary.avg_precision }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">Recall
+      <span data-bs-toggle="tooltip" title="a/(a+c): share of all relevant documents that were found.">ⓘ</span></div>
+    <div class="fs-4">{{ summary.avg_recall }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">F-measure
+      <span data-bs-toggle="tooltip" title="Harmonic mean of precision and recall.">ⓘ</span></div>
+    <div class="fs-4">{{ summary.avg_f_measure }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">Average Precision (mean = MAP)
+      <span data-bs-toggle="tooltip" title="Mean of precision values taken at each rank a relevant document appears; rewards ranking relevant docs early.">ⓘ</span></div>
+    <div class="fs-4">{{ summary.map }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">Precision(5)
+      <span data-bs-toggle="tooltip" title="Fraction of relevant documents among the top 5 results.">ⓘ</span></div>
+    <div class="fs-4">{{ summary["avg_precision@5"] }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">Precision(10)
+      <span data-bs-toggle="tooltip" title="Fraction of relevant documents among the top 10 results.">ⓘ</span></div>
+    <div class="fs-4">{{ summary["avg_precision@10"] }}</div></div></div></div>
+  <div class="col"><div class="card text-center"><div class="card-body">
+    <div class="text-muted small">R-Precision
+      <span data-bs-toggle="tooltip" title="Precision(n) where n equals the number of relevant documents for the query.">ⓘ</span></div>
+    <div class="fs-4">{{ summary.avg_r_precision }}</div></div></div></div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">11-point interpolated Precision/Recall curve (TREC methodology, averaged)</div>
+      <div class="card-body"><canvas id="prCurveChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Average Precision per query</div>
+      <div class="card-body"><canvas id="apChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<h4 class="mb-3">Per-query breakdown</h4>
+<div class="accordion mb-5" id="queryAccordion">
+  {% for q in per_query_results %}
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button {{ '' if loop.first else 'collapsed' }}" type="button"
+              data-bs-toggle="collapse" data-bs-target="#q{{ loop.index }}">
+        "{{ q.query }}" &nbsp;
+        <span class="badge bg-secondary ms-2">AP {{ "%.3f"|format(q.metrics.average_precision) }}</span>
+      </button>
+    </h2>
+    <div id="q{{ loop.index }}" class="accordion-collapse collapse {{ 'show' if loop.first else '' }}"
+         data-bs-parent="#queryAccordion">
+      <div class="accordion-body">
+        <table class="table table-sm w-auto mb-3">
+          <tbody>
+            <tr><th>Relevant (ground truth)</th><td>{{ q.num_relevant }}</td></tr>
+            <tr><th>Retrieved</th><td>{{ q.num_retrieved }}</td></tr>
+            <tr><th>Precision / Recall / F-measure</th>
+                <td>{{ "%.3f"|format(q.metrics.precision) }} /
+                    {{ "%.3f"|format(q.metrics.recall) }} /
+                    {{ "%.3f"|format(q.metrics.f_measure) }}</td></tr>
+            <tr><th>Precision(5) / Precision(10)</th>
+                <td>{{ "%.3f"|format(q.metrics["precision@5"]) }} /
+                    {{ "%.3f"|format(q.metrics["precision@10"]) }}</td></tr>
+            <tr><th>R-Precision</th><td>{{ "%.3f"|format(q.metrics.r_precision) }}</td></tr>
+          </tbody>
+        </table>
+        <table class="table table-sm">
+          <thead><tr><th>#</th><th>Title</th><th>Rank score</th><th>Relevant?</th><th>Matched words</th></tr></thead>
+          <tbody>
+            {% for r in q.top_results %}
+            <tr class="{{ 'table-success' if r.relevant else '' }}">
+              <td>{{ loop.index }}</td><td>{{ r.title }}</td><td>{{ r.rank }}</td>
+              <td>{{ "✓" if r.relevant else "" }}</td>
+              <td><small class="text-muted">{{ r.matched_terms|join(', ') }}</small></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  const prLabels = {{ avg_curve|map(attribute=0)|list|tojson }};
+  const prValues = {{ avg_curve|map(attribute=1)|list|tojson }};
+  new Chart(document.getElementById('prCurveChart'), {
+    type: 'line',
+    data: {
+      labels: prLabels,
+      datasets: [{
+        label: 'Precision',
+        data: prValues,
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13,110,253,0.15)',
+        fill: true,
+        tension: 0.2,
+      }]
+    },
+    options: {
+      scales: {
+        x: { title: { display: true, text: 'Recall' } },
+        y: { title: { display: true, text: 'Precision' }, min: 0, max: 1 }
+      }
+    }
+  });
+
+  const apLabels = {{ per_query_results|map(attribute='query')|list|tojson }};
+  const apValues = {{ per_query_results|map(attribute='metrics')|map(attribute='average_precision')|list|tojson }};
+  new Chart(document.getElementById('apChart'), {
+    type: 'bar',
+    data: {
+      labels: apLabels.map(q => q.length > 24 ? q.slice(0, 24) + '…' : q),
+      datasets: [{
+        label: 'Average Precision',
+        data: apValues,
+        backgroundColor: '#198754',
+      }]
+    },
+    options: {
+      scales: { y: { min: 0, max: 1 } }
+    }
+  });
+</script>
+{% endblock %}

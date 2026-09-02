@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Results for "{{ query }}"{% endblock %}
+{% block content %}
+
+<form action="{{ url_for('search') }}" method="get" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Enter search query...">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+  <div class="form-check mt-2">
+    <input class="form-check-input" type="checkbox" name="all_words" id="all_words" {{ 'checked' if all_words }}>
+    <label class="form-check-label" for="all_words">Require all query words</label>
+  </div>
+</form>
+
+{% if query %}
+  <h5 class="mb-3">
+    {{ results|length }} result{{ 's' if results|length != 1 else '' }} for
+    <span class="text-primary">"{{ query }}"</span>
+  </h5>
+
+  {% if results %}
+    <div class="list-group">
+      {% for r in results %}
+        <a href="{{ url_for('document_detail', doc_id=r.documentId) }}"
+           class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1">{{ r.title }}</h6>
+            <small class="text-muted">rank: {{ "%.4f"|format(r.rank) }}</small>
+          </div>
+          <p class="mb-1 text-muted">{{ r.snippet }}</p>
+          <div class="mb-1">
+            {% if r.matchedTerms %}
+              <small class="text-muted me-1">Matched words:</small>
+              {% for term in r.matchedTerms %}
+                <span class="badge bg-light text-dark border">{{ term }}</span>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <small class="text-secondary">{{ r.date }}</small>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning">No documents matched your query.</div>
+  {% endif %}
+{% else %}
+  <div class="alert alert-secondary">Enter a query above to search the collection.</div>
+{% endif %}
+
+{% endblock %}

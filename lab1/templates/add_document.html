@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Add document{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <h2 class="mb-3">Add a document to the base</h2>
+    <p class="text-muted">
+      Type or paste text directly, or upload a file (.pdf, .docx or .txt) and its
+      text will be extracted automatically. If a file is uploaded and the text box
+      is left empty, the extracted text is used.
+    </p>
+    <form method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" name="title" class="form-control"
+               placeholder="Leave blank to use the uploaded file name">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Upload a file
+          <span tabindex="0" data-bs-toggle="tooltip"
+                title="Supported formats: PDF, DOCX, TXT. Scanned PDFs without a text layer cannot be read.">ⓘ</span>
+        </label>
+        <input type="file" name="file" class="form-control" accept=".pdf,.docx,.txt">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Or paste text</label>
+        <textarea name="text" class="form-control" rows="8"
+                  placeholder="Paste English text here (optional if a file is uploaded)"></textarea>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Add & index</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

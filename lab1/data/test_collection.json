@@ -1,0 +1,89 @@
+{
+  "documents": [
+    {"title": "Introduction to Python Programming", "date": "2026-01-05", "time": "09:00",
+     "text": "Python is a high level, interpreted programming language known for its readable syntax. It supports multiple paradigms including object oriented and functional programming and is widely used for web development, data analysis and automation."},
+    {"title": "Getting Started with Flask", "date": "2026-01-06", "time": "10:15",
+     "text": "Flask is a lightweight web framework written in Python. It provides routing, templating with Jinja and a simple way to build web applications and REST APIs without heavy boilerplate."},
+    {"title": "PostgreSQL for Beginners", "date": "2026-01-07", "time": "11:30",
+     "text": "PostgreSQL is a powerful open source relational database system. It supports advanced data types, full text search and complex queries, and is commonly paired with web applications for persistent storage."},
+    {"title": "Understanding SQL Joins", "date": "2026-01-08", "time": "08:45",
+     "text": "SQL joins combine rows from two or more tables based on a related column. Inner joins, left joins and outer joins are used to build relational queries across a database."},
+    {"title": "Basics of Machine Learning", "date": "2026-01-09", "time": "14:20",
+     "text": "Machine learning is a branch of artificial intelligence where algorithms learn patterns from data. Common tasks include classification, regression and clustering using labeled or unlabeled data."},
+    {"title": "Neural Networks Explained", "date": "2026-01-10", "time": "16:00",
+     "text": "Neural networks are computational models inspired by the brain. They consist of layers of interconnected nodes and are trained using backpropagation to minimize prediction error on data."},
+    {"title": "Information Retrieval Overview", "date": "2026-01-11", "time": "09:40",
+     "text": "Information retrieval deals with finding relevant documents from a large collection in response to a user query. Vector space models represent documents and queries as weighted term vectors."},
+    {"title": "Vector Space Model for Search Engines", "date": "2026-01-12", "time": "12:00",
+     "text": "The vector space model represents each document as a vector of term weights computed using TF-IDF. Query relevance is measured by the cosine similarity between the query vector and document vectors."},
+    {"title": "TF-IDF Term Weighting", "date": "2026-01-13", "time": "13:10",
+     "text": "TF-IDF combines term frequency and inverse document frequency to weight terms by importance. Frequent terms across many documents receive lower weight while distinctive terms receive higher weight."},
+    {"title": "Evaluating Search Quality", "date": "2026-01-14", "time": "15:35",
+     "text": "Precision and recall are standard measures for evaluating search quality. Precision measures the fraction of retrieved documents that are relevant, while recall measures the fraction of relevant documents retrieved."},
+    {"title": "Web Development with JavaScript", "date": "2026-01-15", "time": "10:05",
+     "text": "JavaScript is the primary language for interactive web pages. It runs in the browser and can manipulate the document object model, handle events and communicate with servers using fetch requests."},
+    {"title": "Bootstrap Frontend Framework", "date": "2026-01-16", "time": "11:50",
+     "text": "Bootstrap is a popular CSS framework that provides responsive grid layouts, pre styled components and utility classes, making it easy to build a clean user interface quickly."},
+    {"title": "REST API Design Principles", "date": "2026-01-17", "time": "09:15",
+     "text": "REST APIs expose resources over HTTP using standard verbs like GET, POST, PUT and DELETE. Good API design favors clear resource naming, statelessness and consistent response formats."},
+    {"title": "Relational Database Normalization", "date": "2026-01-18", "time": "14:45",
+     "text": "Normalization organizes database tables to reduce redundancy and improve data integrity. Normal forms define rules for splitting data into related tables connected by keys."},
+    {"title": "Cosine Similarity in Text Mining", "date": "2026-01-19", "time": "16:20",
+     "text": "Cosine similarity measures the angle between two vectors and is widely used in text mining to compare document vectors regardless of their length, making it suitable for ranking search results."},
+    {"title": "Deep Learning for Image Recognition", "date": "2026-01-20", "time": "08:30",
+     "text": "Deep learning models such as convolutional neural networks are used for image recognition tasks. They automatically learn hierarchical features from pixel data through many stacked layers."},
+    {"title": "Local Area Network Fundamentals", "date": "2026-01-21", "time": "10:55",
+     "text": "A local area network connects computers within a limited area such as an office or building. LANs use switches and routers to allow devices to share resources and communicate quickly."},
+    {"title": "Introduction to Data Structures", "date": "2026-01-22", "time": "12:40",
+     "text": "Data structures such as arrays, linked lists, stacks and queues organize data for efficient access and modification. Choosing the right structure affects the performance of an algorithm."},
+    {"title": "Full Text Search in Databases", "date": "2026-01-23", "time": "13:25",
+     "text": "Full text search allows databases to index and query natural language text efficiently. PostgreSQL provides built in full text search using tsvector and tsquery types with ranking functions."},
+    {"title": "Building a Search Engine Index", "date": "2026-01-24", "time": "15:10",
+     "text": "Building a search engine index involves crawling documents, tokenizing text, removing stop words, and storing term positions in an inverted index for fast lookup during query processing."}
+  ],
+  "queries": [
+    {
+      "query": "vector space model cosine similarity search",
+      "relevant_titles": [
+        "Information Retrieval Overview",
+        "Vector Space Model for Search Engines",
+        "TF-IDF Term Weighting",
+        "Cosine Similarity in Text Mining",
+        "Building a Search Engine Index"
+      ]
+    },
+    {
+      "query": "database queries and tables",
+      "relevant_titles": [
+        "PostgreSQL for Beginners",
+        "Understanding SQL Joins",
+        "Relational Database Normalization",
+        "Full Text Search in Databases"
+      ]
+    },
+    {
+      "query": "neural network machine learning data",
+      "relevant_titles": [
+        "Basics of Machine Learning",
+        "Neural Networks Explained",
+        "Deep Learning for Image Recognition"
+      ]
+    },
+    {
+      "query": "web application framework python",
+      "relevant_titles": [
+        "Introduction to Python Programming",
+        "Getting Started with Flask",
+        "Bootstrap Frontend Framework",
+        "REST API Design Principles"
+      ]
+    },
+    {
+      "query": "precision recall evaluation of retrieval quality",
+      "relevant_titles": [
+        "Evaluating Search Quality",
+        "Information Retrieval Overview"
+      ]
+    }
+  ]
+}
