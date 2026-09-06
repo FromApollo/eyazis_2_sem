@@ -4,7 +4,7 @@
 
 <form action="{{ url_for('search') }}" method="get" class="mb-4">
   <div class="input-group">
-    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Enter search query...">
+    <input type="text" name="q" value="{{ query }}" class="form-control js-search-input" placeholder="Enter search query..." autocomplete="off">
     <button class="btn btn-primary" type="submit">Search</button>
   </div>
   <div class="form-check mt-2">
@@ -28,7 +28,7 @@
             <h6 class="mb-1">{{ r.title }}</h6>
             <small class="text-muted">rank: {{ "%.4f"|format(r.rank) }}</small>
           </div>
-          <p class="mb-1 text-muted">{{ r.snippet }}</p>
+          <p class="mb-1 text-muted">{{ r.snippet | safe }}</p>
           <div class="mb-1">
             {% if r.matchedTerms %}
               <small class="text-muted me-1">Matched words:</small>

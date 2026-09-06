@@ -11,16 +11,18 @@ Stack: Python 3 / Flask / SQLAlchemy / PostgreSQL / Jinja2 / Bootstrap 5.
 
 ```
 lab1/
-├── app.py                Flask routes (search UI, document CRUD, metrics, help)
+├── app.py                Flask routes (search UI, document CRUD, crawl, metrics, help)
 ├── config.py              Configuration (DB connection string, etc.)
 ├── models.py               SQLAlchemy models: Document, Lemma, DocumentLemma
-├── search_engine.py       Indexer, tokenizer/stemmer, Search / SearchResult
-├── document_reader.py     PDF / DOCX / TXT upload text extraction
+├── search_engine.py       Indexer, tokenizer/stemmer, Search / SearchResult,
+│                           smart snippet builder, autocomplete suggestions
+├── document_reader.py     PDF / DOCX / TXT text extraction (uploads + disk paths)
+├── crawler.py              Directory crawler ("паук"): os.walk + MD5 dedup
 ├── metrics.py              Precision, recall, F-measure, AP/MAP, R-precision, 11-point PR curve
 ├── init_db.py               Creates tables and loads the test collection
 ├── data/test_collection.json     20 English documents + 5 judged queries
-├── templates/              Jinja2 + Bootstrap templates (incl. help.html)
-├── static/style.css        Minimal custom styling
+├── templates/              Jinja2 + Bootstrap templates (incl. help.html, crawl.html)
+├── static/                 style.css + autocomplete.js
 └── requirements.txt
 ```
 
@@ -28,9 +30,14 @@ lab1/
 
 | Table            | Purpose                                                |
 |-------------------|---------------------------------------------------------|
-| `documents`        | title, text, date, time — the raw document collection  |
+| `documents`        | title, text, date, time, file_path, file_hash — the raw document collection |
 | `lemmas`            | the dictionary (словарь) — one row per unique term      |
 | `document_lemmas`   | inverted index: (document, lemma) → tf, TF-IDF weight   |
+
+`file_path` / `file_hash` are populated when a document comes from the
+directory crawler (`crawler.py`) and are used to detect unchanged /
+changed / new files on repeated crawls (MD5 dedup). They are `NULL` for
+documents added by pasting text or via a one-off file upload.
 
 This mirrors the `Document` / `Search` / `SearchResult` class diagrams from
 the assignment: `Document` exposes `AddDocumentToBase`,
@@ -124,9 +131,25 @@ LAN deployment scope).
   interpolated Precision/Recall curve (TREC methodology), each with a
   chart and per-query breakdown with relevant hits highlighted.
 - **Help** (`/help`) — in-app guide: what the system does, how to search,
-  how to add/manage documents, what each quality metric means, and
-  troubleshooting tips. Inline ⓘ tooltips on the search and metrics pages
-  give short explanations next to the relevant controls.
+  how to add/manage documents, crawling folders, search suggestions and
+  snippets, what each quality metric means, and troubleshooting tips.
+  Inline ⓘ tooltips on the search and metrics pages give short
+  explanations next to the relevant controls.
+- **Crawl folder** (`/crawl`) — point the crawler ("паук") at a directory
+  on the server's filesystem (or a mounted LAN share); it walks every
+  subfolder with `os.walk`, extracts text from `.txt`/`.pdf`/`.docx`
+  files, and indexes them. Each file is tracked by its path and an MD5
+  hash of its contents: unchanged files are skipped, changed files are
+  re-indexed, new files are added — safe to re-run on the same folder
+  repeatedly (`crawler.py`).
+- **Search suggestions** — as you type into the search box, a dropdown
+  (`/api/suggest`, `static/autocomplete.js`) suggests matching dictionary
+  terms and document titles drawn from the system's own index, not an
+  external API — keeping the system self-contained for LAN deployment.
+- **Smart snippets** — instead of showing the first 300 characters of a
+  document, search results show the excerpt with the highest density of
+  query-word matches, with those words shown in **bold**
+  (`search_engine.build_snippet`).
 
 ## 4. Test collection
 

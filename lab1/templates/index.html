@@ -12,7 +12,7 @@
 
     <form action="{{ url_for('search') }}" method="get" class="mt-4">
       <div class="input-group input-group-lg mb-3">
-        <input type="text" name="q" class="form-control" placeholder="Enter search query..." autofocus>
+        <input type="text" name="q" class="form-control js-search-input" placeholder="Enter search query..." autocomplete="off" autofocus>
         <button class="btn btn-primary" type="submit">Search</button>
       </div>
 

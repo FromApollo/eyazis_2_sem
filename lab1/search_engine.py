@@ -9,6 +9,7 @@ Implements, in line with the lab's theoretical section:
   - binary query vector wqj in {0, 1}
   - cosine similarity  r(D,Q) = (D,Q) / (||D|| * ||Q||)
 """
+import html
 import math
 import re
 from collections import Counter
@@ -65,14 +66,113 @@ def tokenize(text):
 
 
 # --------------------------------------------------------------------------
+# "AI element" #1: relevance-dense snippet extraction with bolded matches,
+# instead of a naive first-300-characters slice. Finds the window of the
+# document that contains the most query-term hits and bolds them.
+# --------------------------------------------------------------------------
+def build_snippet(text, query_terms, window_tokens=28, max_chars=320):
+    """
+    text: the full document text
+    query_terms: set of stemmed query terms to highlight
+    Returns an HTML-safe string (non-matched text escaped, matches wrapped
+    in <strong>) with the densest window of query-term hits, or a plain
+    leading excerpt if the document contains no words at all.
+    """
+    tokens = [(m.start(), m.end(), m.group(0)) for m in _TOKEN_RE.finditer(text)]
+    if not tokens:
+        return html.escape(text[:max_chars])
+
+    stems = [_simple_stem(w.lower()) for (_s, _e, w) in tokens]
+    match_flags = [1 if s in query_terms else 0 for s in stems]
+
+    n = len(tokens)
+    w = min(window_tokens, n)
+
+    # sliding window: find the w-token window with the most query-term hits
+    current = sum(match_flags[:w])
+    best_score, best_start = current, 0
+    for i in range(1, n - w + 1):
+        current += match_flags[i + w - 1] - match_flags[i - 1]
+        if current > best_score:
+            best_score, best_start = current, i
+
+    window = tokens[best_start:best_start + w]
+    window_flags = match_flags[best_start:best_start + w]
+    start_char, end_char = window[0][0], window[-1][1]
+
+    # Trim an overly long window down toward max_chars, keeping it centred
+    # on the highest local match density if it had to be shortened.
+    if end_char - start_char > max_chars:
+        end_char = start_char + max_chars
+
+    pieces = []
+    cursor = start_char
+    for (s, e, word), is_match in zip(window, window_flags):
+        if e > end_char:
+            break
+        if s > cursor:
+            pieces.append(html.escape(text[cursor:s]))
+        display_word = html.escape(text[s:e])
+        pieces.append(f"<strong>{display_word}</strong>" if is_match else display_word)
+        cursor = e
+
+    prefix = "…" if start_char > 0 else ""
+    suffix = "…" if end_char < len(text) else ""
+    return prefix + "".join(pieces) + suffix
+
+
+# --------------------------------------------------------------------------
+# "AI element" #2: search-box autocomplete, driven by the system's own
+# index (dictionary terms + document titles) rather than an external API --
+# keeps the system fully self-contained for LAN deployment.
+# --------------------------------------------------------------------------
+def suggest_terms(prefix, limit=8):
+    prefix = (prefix or "").strip().lower()
+    if len(prefix) < 2:
+        return []
+
+    term_rows = (
+        db.session.query(Lemma.term)
+        .filter(Lemma.term.ilike(f"{prefix}%"))
+        .order_by(Lemma.term)
+        .limit(limit)
+        .all()
+    )
+    title_rows = (
+        db.session.query(Document.title)
+        .filter(Document.title.ilike(f"%{prefix}%"))
+        .order_by(Document.title)
+        .limit(limit)
+        .all()
+    )
+
+    seen = set()
+    suggestions = []
+    for (value,) in list(term_rows) + list(title_rows):
+        key = value.lower()
+        if key not in seen:
+            seen.add(key)
+            suggestions.append(value)
+        if len(suggestions) >= limit:
+            break
+    return suggestions
+
+
+# --------------------------------------------------------------------------
 # Indexing
 # --------------------------------------------------------------------------
 class Indexer:
     """Builds/refreshes the inverted index and TF-IDF weights."""
 
     @staticmethod
-    def index_document(document):
-        """Tokenise a single document and (re)write its DocumentLemma rows."""
+    def index_document(document, recompute=True):
+        """Tokenise a single document and (re)write its DocumentLemma rows.
+
+        recompute=False skips the (collection-wide) weight recomputation --
+        useful when indexing many documents in a batch (e.g. the directory
+        crawler), where callers should call recompute_weights() once at the
+        end instead of after every single document.
+        """
         DocumentLemma.query.filter_by(document_id=document.documentID).delete()
 
         terms = tokenize(document.text + " " + document.title)
@@ -92,7 +192,8 @@ class Indexer:
             )
             db.session.add(link)
         db.session.commit()
-        Indexer.recompute_weights()
+        if recompute:
+            Indexer.recompute_weights()
 
     @staticmethod
     def rebuild_full_index():
@@ -250,7 +351,7 @@ class Search:
             results.append(SearchResult(
                 documentId=document.documentID,
                 title=document.title,
-                snippet=(document.text[:300] + ("..." if len(document.text) > 300 else "")),
+                snippet=build_snippet(document.text, query_terms),
                 rank=rank,
                 date=document.date,
                 matchedTerms=matched_terms,

@@ -2,12 +2,13 @@ import json
 import os
 from datetime import datetime
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 from config import Config
 from models import db, Document
-from search_engine import Search, Indexer
+from search_engine import Search, Indexer, suggest_terms
 from document_reader import extract_text, allowed_file
+from crawler import crawl_directory
 import metrics as metrics_module
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "test_collection.json")
@@ -199,6 +200,38 @@ def register_routes(app):
     @app.route("/help")
     def help_page():
         return render_template("help.html")
+
+    # ---------------------------------------------------------------
+    # Directory crawler ("паук") -- variant 9 LAN scope: scans a folder
+    # tree on disk (or a mounted network share) and indexes .txt/.pdf/.docx
+    # files, skipping unchanged files and updating changed ones by MD5.
+    # ---------------------------------------------------------------
+    @app.route("/crawl", methods=["GET", "POST"])
+    def crawl():
+        result = None
+        if request.method == "POST":
+            root_path = request.form.get("root_path", "").strip()
+            result = crawl_directory(root_path)
+            if result.errors and not (result.added or result.updated or result.skipped_unchanged):
+                flash("Crawl finished with errors -- see details below.", "danger")
+            else:
+                flash(
+                    f"Crawl finished: {len(result.added)} added, "
+                    f"{len(result.updated)} updated, "
+                    f"{len(result.skipped_unchanged)} unchanged, "
+                    f"{len(result.errors)} errors.",
+                    "success" if not result.errors else "warning",
+                )
+        return render_template("crawl.html", result=result)
+
+    # ---------------------------------------------------------------
+    # Search-box autocomplete -- suggestions drawn from the system's own
+    # index (dictionary terms + document titles), no external API needed.
+    # ---------------------------------------------------------------
+    @app.route("/api/suggest")
+    def api_suggest():
+        q = request.args.get("q", "")
+        return jsonify(suggest_terms(q))
 
     @app.route("/reindex", methods=["POST"])
     def reindex():

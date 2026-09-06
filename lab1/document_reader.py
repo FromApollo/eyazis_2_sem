@@ -1,8 +1,8 @@
 """
-Text extraction for uploaded documents (PDF / DOCX / TXT), so the
-information source ("множество естественно-языковых текстов") can be fed
-into the system without manual copy-pasting -- required for the "приём
-информации и её предварительная обработка" task from the assignment.
+Text extraction for documents (PDF / DOCX / TXT), so the information
+source ("множество естественно-языковых текстов") can be fed into the
+system either through manual upload or through the directory crawler
+(crawler.py) -- both paths share the same extraction logic here.
 """
 import os
 from io import BytesIO
@@ -17,14 +17,13 @@ def allowed_file(filename):
     return ext in ALLOWED_EXTENSIONS
 
 
-def extract_text(file_storage):
+def extract_text_from_bytes(data, ext):
     """
-    file_storage: a Werkzeug FileStorage object (from request.files).
+    data: raw file bytes
+    ext:  file extension without the dot (e.g. "pdf", "docx", "txt")
     Returns extracted plain text, or raises ValueError on failure.
     """
-    filename = file_storage.filename or ""
-    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-    data = file_storage.read()
+    ext = (ext or "").lower()
 
     if ext == "txt":
         for encoding in ("utf-8", "cp1251", "latin-1"):
@@ -62,3 +61,20 @@ def extract_text(file_storage):
         return text
 
     raise ValueError(f"Unsupported file type: .{ext}")
+
+
+def extract_text(file_storage):
+    """file_storage: a Werkzeug FileStorage object (from request.files)."""
+    filename = file_storage.filename or ""
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    data = file_storage.read()
+    return extract_text_from_bytes(data, ext)
+
+
+def extract_text_from_path(path):
+    """Reads a file straight off disk -- used by the directory crawler."""
+    filename = os.path.basename(path)
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    with open(path, "rb") as f:
+        data = f.read()
+    return extract_text_from_bytes(data, ext)
