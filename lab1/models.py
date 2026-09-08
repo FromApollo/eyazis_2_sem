@@ -27,6 +27,12 @@ class Document(db.Model):
     date = db.Column(db.String(20), nullable=False)
     time = db.Column(db.String(20), nullable=False)
 
+    # Populated when the document came from the directory crawler; used to
+    # detect the same file across repeated crawls and to decide whether it
+    # needs re-indexing (see crawler.py).
+    file_path = db.Column(db.String(1000), nullable=True, index=True)
+    file_hash = db.Column(db.String(32), nullable=True)  # MD5 hex digest
+
     lemma_links = db.relationship(
         "DocumentLemma", backref="document", cascade="all, delete-orphan"
     )

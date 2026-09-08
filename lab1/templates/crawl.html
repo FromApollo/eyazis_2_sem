@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Crawl a folder{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-9">
+    <h2 class="mb-3">Crawl a folder</h2>
+    <p class="text-muted">
+      Point the crawler at a directory on the server's filesystem
+       and it will walk every subfolder, extract
+      text from any <code>.txt</code>, <code>.pdf</code> or <code>.docx</code>
+      file it finds, and add it to the index. Files that were already
+      indexed are compared by an MD5 hash of their contents: unchanged
+      files are skipped, changed files are re-indexed, new files are added.
+    </p>
+
+    <form method="post" class="mb-4">
+      <div class="input-group">
+        <input type="text" name="root_path" class="form-control"
+               placeholder="/path/to/documents" required
+               value="{{ request.form.get('root_path', '') }}">
+        <button class="btn btn-primary" type="submit">Crawl</button>
+      </div>
+      <div class="form-text">
+        Absolute path on the server, e.g. <code>/home/claude/documents</code>.
+      </div>
+    </form>
+
+    {% if result %}
+      <h4 class="mb-3">Crawl report — {{ result.root_path }}</h4>
+      <div class="row row-cols-2 row-cols-md-5 g-3 mb-4">
+        <div class="col"><div class="card text-center"><div class="card-body">
+          <div class="text-muted small">Added</div><div class="fs-4">{{ result.added|length }}</div></div></div></div>
+        <div class="col"><div class="card text-center"><div class="card-body">
+          <div class="text-muted small">Updated</div><div class="fs-4">{{ result.updated|length }}</div></div></div></div>
+        <div class="col"><div class="card text-center"><div class="card-body">
+          <div class="text-muted small">Unchanged</div><div class="fs-4">{{ result.skipped_unchanged|length }}</div></div></div></div>
+        <div class="col"><div class="card text-center"><div class="card-body">
+          <div class="text-muted small">Skipped (type)</div><div class="fs-4">{{ result.skipped_unsupported|length }}</div></div></div></div>
+        <div class="col"><div class="card text-center"><div class="card-body">
+          <div class="text-muted small">Errors</div><div class="fs-4">{{ result.errors|length }}</div></div></div></div>
+      </div>
+
+      {% macro file_list(title, items, badge_class) %}
+        {% if items %}
+          <h6>{{ title }} ({{ items|length }})</h6>
+          <ul class="list-group list-group-flush mb-3">
+            {% for path in items[:20] %}
+              <li class="list-group-item"><span class="badge {{ badge_class }} me-2">&nbsp;</span>{{ path }}</li>
+            {% endfor %}
+            {% if items|length > 20 %}
+              <li class="list-group-item text-muted">…and {{ items|length - 20 }} more</li>
+            {% endif %}
+          </ul>
+        {% endif %}
+      {% endmacro %}
+
+      {{ file_list("Added", result.added, "bg-success") }}
+      {{ file_list("Updated", result.updated, "bg-warning") }}
+
+      {% if result.errors %}
+        <h6>Errors ({{ result.errors|length }})</h6>
+        <ul class="list-group list-group-flush mb-3">
+          {% for path, message in result.errors[:20] %}
+            <li class="list-group-item"><strong>{{ path }}</strong><br><small class="text-danger">{{ message }}</small></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

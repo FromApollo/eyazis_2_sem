@@ -75,6 +75,48 @@
 
       <div class="accordion-item">
         <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h3b">
+            Crawling a folder automatically
+          </button>
+        </h2>
+        <div id="h3b" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            Instead of adding files one at a time, open <a href="{{ url_for('crawl') }}">Crawl folder</a> and
+            give it a directory path on the server (or a mounted LAN share). The crawler walks every
+            subfolder and indexes every <strong>.txt</strong>, <strong>.pdf</strong> and <strong>.docx</strong>
+            file it finds — this is the "паук" (agent/crawler) component of the system.
+            <p class="mt-2 mb-0">
+              Each file is tracked by its path and an MD5 hash of its contents, so re-running the crawl is
+              safe and cheap:
+            </p>
+            <ul class="mb-0">
+              <li>a file whose content hasn't changed is <strong>skipped</strong>;</li>
+              <li>a file whose content has changed since the last crawl is <strong>re-indexed</strong>;</li>
+              <li>a file never seen before is <strong>added</strong> as a new document.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h3c">
+            Search suggestions and smart snippets
+          </button>
+        </h2>
+        <div id="h3c" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+          <div class="accordion-body">
+            As you type in the search box, a dropdown suggests matching dictionary terms and document
+            titles from the system's own index — no external service is called, so this works fully
+            offline on a local network. Search results also show a snippet centred on the part of the
+            document with the most query-word matches (not just the first 300 characters), with those
+            matched words shown in <strong>bold</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h4">
             Managing documents
           </button>

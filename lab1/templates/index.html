@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Search — Vector IR System{% endblock %}
+{% block title %}Search — Vector System{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8 text-center">
     <h1 class="mb-3">Vector-Model Search</h1>
     <p class="text-muted">
-      English-language document search over a local collection ({{ doc_count }} document{{ 's' if doc_count != 1 else '' }} indexed),
-      ranked by cosine similarity between TF-IDF document vectors and the query vector.
+      English-language document search over a local collection,
+      ranked by cosine similarity.
       New here? See the <a href="{{ url_for('help_page') }}">Help page</a> for a quick guide.
     </p>
 
     <form action="{{ url_for('search') }}" method="get" class="mt-4">
       <div class="input-group input-group-lg mb-3">
-        <input type="text" name="q" class="form-control" placeholder="Enter search query..." autofocus>
+        <input type="text" name="q" class="form-control js-search-input" placeholder="Enter search query..." autocomplete="off" autofocus>
         <button class="btn btn-primary" type="submit">Search</button>
       </div>
 
