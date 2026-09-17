@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1>404</h1>
+  <p>Запрошенная страница или документ не найдены.</p>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">На главную</a>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Отчёт по тестовой коллекции — определение языка текста</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #1b2631; margin: 30px; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 16px; margin-top: 26px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+  th, td { border: 1px solid #bbb; padding: 5px 8px; text-align: left; font-size: 12px; }
+  th { background: #eaf2f8; }
+  .ok { color: #1e8449; }
+  .bad { color: #c0392b; }
+  .muted { color: #777; font-size: 11px; }
+  img { max-width: 45%; margin: 6px 1%; }
+</style>
+</head>
+<body>
+
+<h1>Отчёт по тестовой коллекции документов</h1>
+<p class="muted">Автоматическое распознавание языка текста — вариант 10 (Русский/Английский, PDF).
+Сформировано веб-приложением {{ 'для печати' if not for_pdf else '(экспорт PDF)' }}.</p>
+
+<h2>1. Сводная статистика</h2>
+<p>Всего документов в коллекции: {{ stats.total_count }}. С указанным истинным языком (учитываются в статистике): {{ stats.labeled_count }}.</p>
+<table>
+  <tr><th>Метод</th><th>Точность, %</th><th>Верно / Всего</th><th>Среднее время, мс/документ</th></tr>
+  {% for key, name in METHOD_NAMES.items() %}
+  {% set s = stats.summary[key] %}
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ s.accuracy_percent if s.accuracy_percent is not none else '—' }}</td>
+    <td>{{ s.correct }} / {{ s.total }}</td>
+    <td>{{ s.avg_time_ms if s.avg_time_ms is not none else '—' }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<div>
+  <img src="{{ url_for('static', filename='img/chart_accuracy.png', _external=True) if for_pdf else url_for('static', filename='img/chart_accuracy.png') }}">
+  <img src="{{ url_for('static', filename='img/chart_time.png', _external=True) if for_pdf else url_for('static', filename='img/chart_time.png') }}">
+</div>
+
+<h2>2. Результаты по документам тестовой коллекции</h2>
+<table>
+  <tr>
+    <th>Документ</th><th>Истинный язык</th><th>Частотных слов</th><th>Коротких слов</th><th>Нейросетевой</th><th>Загружен</th>
+  </tr>
+  {% for d in docs %}
+  <tr>
+    <td>{{ d.original_filename }}</td>
+    <td>{{ LANG_NAMES[d.true_language] }}</td>
+    {% for m in ['freq_words','short_words','neural'] %}
+    <td>
+      {{ LANG_NAMES[d.methods[m].predicted] }}
+      {% if d.true_language %}
+        {% if d.methods[m].correct %}<span class="ok">верно</span>{% else %}<span class="bad">ошибка</span>{% endif %}
+      {% endif %}
+    </td>
+    {% endfor %}
+    <td>{{ d.uploaded_at }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<p class="muted">Документ сформирован автоматически системой определения языка текста (Flask + Bootstrap, Python).</p>
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+[
+  {
+    "id": "214acbca35",
+    "stored_filename": "edbf7b5c_doc01_ru.pdf",
+    "original_filename": "doc01_ru.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 26.2,
+    "true_language": "ru",
+    "text_preview": "Искусственный интеллект и его применение в медицине\nЗа последнее десятилетие искусственный интеллект стал неотъемлемой\nчастью современной медицины. Алгоритмы машинного обучения помогают\nврачам анализировать медицинские изображения, такие как рентгеновские\nснимки, компьютерная и магнитно-резонансная томография, с точностью,\nзачастую превышающей возможности человека. Системы поддержки принятия\nрешений на основе искусственного интеллекта позволяют быстрее выявлять\nпризнаки онкологических заболеваний на ранних стадиях, когда лечение\nнаиболее эффективно. Кроме того, нейронные сети используются для\n",
+    "text_length_chars": 904,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -769.9322622968938,
+          "en": -907.2227069846568
+        },
+        "time_sec": 0.00015076500005761773,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -82.24012139738731,
+          "en": -165.7454148487599
+        },
+        "time_sec": 0.00010564800004431163,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.0010213998641475097,
+          "ru": 0.9989786001358525
+        },
+        "time_sec": 0.003660315999923114,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "d54f79842f",
+    "stored_filename": "299a0430_doc02_en.pdf",
+    "original_filename": "doc02_en.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 22.7,
+    "true_language": "en",
+    "text_preview": "The Future of Renewable Energy Technology\nOver the past decade renewable energy technology has advanced at a remarkable\npace, transforming the global energy landscape. Solar panels have become\nsignificantly cheaper and more efficient, while offshore wind farms now generate\nelectricity at costs competitive with traditional fossil fuel power plants. Battery\nstorage systems are also improving rapidly, addressing one of the biggest\nchallenges of renewable energy: the intermittent nature of sunlight and wind. Many\ncountries have set ambitious targets to achieve net zero carbon emissions within the\n",
+    "text_length_chars": 855,
+    "methods": {
+      "freq_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -1097.158532729129,
+          "en": -837.5660868150853
+        },
+        "time_sec": 0.00014856099994631222,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -373.6147878688501,
+          "en": -279.4586208842452
+        },
+        "time_sec": 0.00010787199994410912,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "en",
+        "scores": {
+          "en": 0.9993841142319152,
+          "ru": 0.0006158857680847632
+        },
+        "time_sec": 0.0017212490000702019,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "d7cb82eddb",
+    "stored_filename": "e0b62f5b_doc03_ru.pdf",
+    "original_filename": "doc03_ru.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 25.6,
+    "true_language": "ru",
+    "text_preview": "Развитие городского общественного транспорта\nОбщественный транспорт играет важнейшую роль в жизни современных\nмегаполисов. Строительство новых линий метрополитена, трамвайных путей и\nвыделенных полос для автобусов позволяет существенно сократить время в\nпути для миллионов пассажиров ежедневно. Многие крупные города внедряют\nединые транспортные карты, которые позволяют пользоваться разными\nвидами транспорта по единому тарифу. Развитие электрического транспорта,\nв частности электробусов, способствует снижению уровня загрязнения\nвоздуха в центральных районах города. Городские власти также уделяют",
+    "text_length_chars": 760,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -667.962397706727,
+          "en": -780.2115280068048
+        },
+        "time_sec": 0.00018026499992629397,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -100.7958125856378,
+          "en": -181.5306924534037
+        },
+        "time_sec": 0.00010407600007056317,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.0010458817567325918,
+          "ru": 0.9989541182432674
+        },
+        "time_sec": 0.0031850430000304186,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "a419f90496",
+    "stored_filename": "130a247f_doc04_en.pdf",
+    "original_filename": "doc04_en.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 22.6,
+    "true_language": "en",
+    "text_preview": "A Short History of the Internet\nThe internet began as a small research project funded by the United States\ngovernment in the late 1960s, connecting only a handful of university computers.\nOver the following decades it grew into a global network linking billions of devices\naround the world. The invention of the World Wide Web in 1989 made the internet\naccessible to ordinary people, leading to an explosion of websites, online services\nand electronic commerce. Today the internet underpins nearly every aspect of\nmodern life, from communication and entertainment to education and business. As\nintern",
+    "text_length_chars": 750,
+    "methods": {
+      "freq_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -1025.7986281613817,
+          "en": -745.7189253315571
+        },
+        "time_sec": 0.00014438400000926777,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -386.7240786712659,
+          "en": -247.58471823312755
+        },
+        "time_sec": 0.00010271399992234365,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "en",
+        "scores": {
+          "en": 0.9993289438961889,
+          "ru": 0.0006710561038111406
+        },
+        "time_sec": 0.0015819739999187732,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "1942bdf4c5",
+    "stored_filename": "de0db2c4_doc05_ru.pdf",
+    "original_filename": "doc05_ru.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 25.8,
+    "true_language": "ru",
+    "text_preview": "Секреты выращивания комнатных растений\nКомнатные растения способны преобразить любое жилое пространство,\nнаполняя его свежестью и живыми красками. Для успешного выращивания\nрастений важно учитывать несколько факторов: уровень освещённости,\nчастоту полива, влажность воздуха и температуру в помещении. Большинство\nтропических растений предпочитают рассеянный свет и не переносят прямых\nсолнечных лучей, тогда как суккуленты и кактусы, наоборот, нуждаются в\nярком солнечном освещении. Регулярная пересадка в свежий грунт и\nсвоевременная подкормка удобрениями помогают растениям расти здоровыми\nи обильн",
+    "text_length_chars": 707,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -665.6032072488518,
+          "en": -780.2115280068048
+        },
+        "time_sec": 0.00012855800002853357,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -124.40745437047795,
+          "en": -220.9938864650132
+        },
+        "time_sec": 9.306699996614043e-05,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.0013247993359210009,
+          "ru": 0.998675200664079
+        },
+        "time_sec": 0.0015119450000611323,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "6773015e8a",
+    "stored_filename": "66579020_doc06_en.pdf",
+    "original_filename": "doc06_en.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 22.6,
+    "true_language": "en",
+    "text_preview": "Understanding Financial Literacy\nFinancial literacy refers to the knowledge and skills needed to make informed\ndecisions about money management, saving and investing. Building a strong\nfoundation in financial literacy at a young age can help individuals avoid common\npitfalls such as excessive debt and poor credit management. Key concepts include\nbudgeting, understanding interest rates, distinguishing between good and bad debt,\nand the importance of building an emergency fund. Many schools have begun\nincorporating personal finance courses into their curricula, recognizing that these\npractical s",
+    "text_length_chars": 816,
+    "methods": {
+      "freq_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -1007.9586520194447,
+          "en": -829.4708362940875
+        },
+        "time_sec": 0.00014961299996230082,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -340.84156086281064,
+          "en": -264.8870207726321
+        },
+        "time_sec": 0.00010022900005424162,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "en",
+        "scores": {
+          "en": 0.9992966049340369,
+          "ru": 0.0007033950659630517
+        },
+        "time_sec": 0.001565996000067571,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "7a8ffac2a6",
+    "stored_filename": "70c421e4_doc07_ru_short.pdf",
+    "original_filename": "doc07_ru_short.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 23.1,
+    "true_language": "ru",
+    "text_preview": "Короткая заметка\nСегодня хорошая погода.",
+    "text_length_chars": 40,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -44.599940354842616,
+          "en": -45.36113534923274
+        },
+        "time_sec": 2.232800000001589e-05,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -1000000000.0,
+          "en": -1000000000.0
+        },
+        "time_sec": 1.0167999903387681e-05,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.03010148504930532,
+          "ru": 0.9698985149506947
+        },
+        "time_sec": 0.0007952539999678265,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "998b4bd92f",
+    "stored_filename": "a69fe44c_doc08_en_short.pdf",
+    "original_filename": "doc08_en_short.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 22.1,
+    "true_language": "en",
+    "text_preview": "Short Note\nThe weather is nice today.",
+    "text_length_chars": 37,
+    "methods": {
+      "freq_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -62.43991649677966,
+          "en": -46.663211428476856
+        },
+        "time_sec": 1.951299998381728e-05,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -39.327872407247405,
+          "en": -37.31584951680676
+        },
+        "time_sec": 1.25619999380433e-05,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "en",
+        "scores": {
+          "en": 0.9812656971874121,
+          "ru": 0.01873430281258797
+        },
+        "time_sec": 0.000974216000031447,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "814fd7494f",
+    "stored_filename": "0c2e8b8a_doc09_ru_verytough.pdf",
+    "original_filename": "doc09_ru_verytough.pdf",
+    "uploaded_at": "2026-09-17 17:27:05",
+    "file_size_kb": 23.3,
+    "true_language": "ru",
+    "text_preview": "Заметка\nПрекрасный вечер.",
+    "text_length_chars": 25,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -26.759964212905572,
+          "en": -27.216681209539644
+        },
+        "time_sec": 1.7749999983607267e-05,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -6.5546454012079005,
+          "en": -7.892638802321904
+        },
+        "time_sec": 9.25599999845872e-06,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.036617589223756464,
+          "ru": 0.9633824107762435
+        },
+        "time_sec": 0.0008834430000206339,
+        "correct": true
+      }
+    }
+  },
+  {
+    "id": "317229293b",
+    "stored_filename": "06b41741_doc09_ru_verytough.pdf",
+    "original_filename": "doc09_ru_verytough.pdf",
+    "uploaded_at": "2026-09-17 17:30:49",
+    "file_size_kb": 23.3,
+    "true_language": null,
+    "text_preview": "Заметка\nПрекрасный вечер.",
+    "text_length_chars": 25,
+    "methods": {
+      "freq_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -26.759964212905572,
+          "en": -27.216681209539644
+        },
+        "time_sec": 2.851400017789274e-05,
+        "correct": false
+      },
+      "short_words": {
+        "predicted": "ru",
+        "scores": {
+          "ru": -6.5546454012079005,
+          "en": -7.892638802321904
+        },
+        "time_sec": 1.1131000064779073e-05,
+        "correct": false
+      },
+      "neural": {
+        "predicted": "ru",
+        "scores": {
+          "en": 0.036617589223756464,
+          "ru": 0.9633824107762435
+        },
+        "time_sec": 0.003155068999831201,
+        "correct": false
+      }
+    }
+  },
+  {
+    "id": "ba7786391a",
+    "stored_filename": "0c0a6f79_doc08_en_short.pdf",
+    "original_filename": "doc08_en_short.pdf",
+    "uploaded_at": "2026-09-17 17:31:59",
+    "file_size_kb": 22.1,
+    "true_language": "en",
+    "text_preview": "Short Note\nThe weather is nice today.",
+    "text_length_chars": 37,
+    "methods": {
+      "freq_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -62.43991649677966,
+          "en": -46.663211428476856
+        },
+        "time_sec": 2.3974999976417166e-05,
+        "correct": true
+      },
+      "short_words": {
+        "predicted": "en",
+        "scores": {
+          "ru": -39.327872407247405,
+          "en": -37.31584951680676
+        },
+        "time_sec": 1.2844000139011769e-05,
+        "correct": true
+      },
+      "neural": {
+        "predicted": "en",
+        "scores": {
+          "en": 0.9812656971874121,
+          "ru": 0.01873430281258797
+        },
+        "time_sec": 0.001150233000089429,
+        "correct": true
+      }
+    }
+  }
+]

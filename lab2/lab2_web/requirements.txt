@@ -1,0 +1,7 @@
+Flask>=3.0
+Werkzeug>=3.0
+pdfplumber>=0.11
+reportlab>=4.0
+scikit-learn>=1.3
+numpy>=1.26
+matplotlib>=3.8

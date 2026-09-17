@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Тестовая коллекция{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>Тестовая коллекция документов
+    <span class="help-icon" data-bs-toggle="tooltip" title="Список всех загруженных PDF-документов. Ссылка на файл — активная (открывает документ в новой вкладке). Для каждого документа показан результат определения языка тремя методами.">ℹ️</span>
+  </h4>
+  <div>
+    <a href="{{ url_for('export_csv') }}" class="btn btn-sm btn-outline-success">⬇ Экспорт CSV</a>
+    <a href="{{ url_for('export_json') }}" class="btn btn-sm btn-outline-success">⬇ Экспорт JSON</a>
+  </div>
+</div>
+
+{% if docs %}
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle bg-white">
+  <thead class="table-light">
+    <tr>
+      <th>Документ (активная ссылка)</th>
+      <th>Размер</th>
+      <th>Истинный язык</th>
+      <th>Частотных слов</th>
+      <th>Коротких слов</th>
+      <th>Нейросетевой</th>
+      <th>Загружен</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in docs %}
+    <tr>
+      <td>
+        <a href="{{ url_for('serve_file', doc_id=d.id) }}" target="_blank" title="Открыть исходный PDF-документ">
+          📄 {{ d.original_filename }}
+        </a><br>
+        <a class="small" href="{{ url_for('document_detail', doc_id=d.id) }}">подробный результат →</a>
+      </td>
+      <td>{{ d.file_size_kb }} КБ</td>
+      <td><span class="badge badge-lang-{{ d.true_language or 'none' }}">{{ LANG_NAMES[d.true_language] }}</span></td>
+      {% for m in ['freq_words','short_words','neural'] %}
+      <td>
+        <span class="badge badge-lang-{{ d.methods[m].predicted }}">{{ LANG_NAMES[d.methods[m].predicted] }}</span>
+        {% if d.true_language %}
+          {% if d.methods[m].correct %}<span class="text-success">✓</span>{% else %}<span class="text-danger">✗</span>{% endif %}
+        {% endif %}
+      </td>
+      {% endfor %}
+      <td class="text-muted small">{{ d.uploaded_at }}</td>
+      <td>
+        <form action="{{ url_for('delete_document', doc_id=d.id) }}" method="post" onsubmit="return confirm('Удалить документ из коллекции?');">
+          <button class="btn btn-sm btn-outline-danger" type="submit">✕</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="text-muted">Тестовая коллекция пуста. <a href="{{ url_for('index') }}">Загрузите первый документ</a>.</p>
+{% endif %}
+
+{% endblock %}

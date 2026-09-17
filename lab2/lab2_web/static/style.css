@@ -1,0 +1,48 @@
+body {
+  background-color: #f7f9fb;
+}
+.card {
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.badge-lang-ru {
+  background-color: #2e86c1;
+}
+.badge-lang-en {
+  background-color: #cb4335;
+}
+.badge-lang-none {
+  background-color: #909497;
+}
+.help-icon {
+  cursor: help;
+  color: #5dade2;
+  font-size: .9rem;
+}
+.score-bar-bg {
+  background-color: #eaecee;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 10px;
+}
+.text-preview {
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fbfcfc;
+  border: 1px solid #e5e7e9;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: .92rem;
+  white-space: pre-wrap;
+}
+table.table-sm td, table.table-sm th {
+  vertical-align: middle;
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .container { max-width: 100% !important; }
+}

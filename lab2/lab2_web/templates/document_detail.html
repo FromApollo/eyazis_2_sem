@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.original_filename }}{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('documents') }}">Тестовая коллекция</a></li>
+    <li class="breadcrumb-item active">{{ doc.original_filename }}</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-lg-7 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title d-flex justify-content-between">
+          <span>📄 {{ doc.original_filename }}</span>
+          <a href="{{ url_for('serve_file', doc_id=doc.id) }}" target="_blank" class="btn btn-sm btn-outline-primary">Открыть PDF (активная ссылка)</a>
+        </h5>
+        <p class="text-muted small mb-3">
+          Размер: {{ doc.file_size_kb }} КБ &middot; Загружен: {{ doc.uploaded_at }} &middot;
+          Извлечено символов текста: {{ doc.text_length_chars }}
+        </p>
+
+        <form action="{{ url_for('set_true_language', doc_id=doc.id) }}" method="post" class="row g-2 align-items-end mb-3">
+          <div class="col-auto">
+            <label class="form-label mb-0 small">Истинный язык документа
+              <span class="help-icon" data-bs-toggle="tooltip" title="Укажите настоящий язык документа, чтобы включить его в подсчёт точности методов.">ℹ️</span>
+            </label>
+            <select class="form-select form-select-sm" name="true_language">
+              <option value="" {% if not doc.true_language %}selected{% endif %}>Не указан</option>
+              <option value="ru" {% if doc.true_language=='ru' %}selected{% endif %}>Русский</option>
+              <option value="en" {% if doc.true_language=='en' %}selected{% endif %}>Английский</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-sm btn-secondary" type="submit">Сохранить</button>
+          </div>
+        </form>
+
+        <h6>Фрагмент извлечённого текста:</h6>
+        <div class="text-preview">{{ doc.text_preview }}{% if doc.text_length_chars > doc.text_preview|length %}…{% endif %}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Результат определения языка</h5>
+        {% for key, name in METHOD_NAMES.items() %}
+        {% set m = doc.methods[key] %}
+        <div class="mb-3 pb-2 border-bottom">
+          <div class="d-flex justify-content-between">
+            <b>{{ name }}</b>
+            <span class="badge badge-lang-{{ m.predicted }}">{{ LANG_NAMES[m.predicted] }}</span>
+          </div>
+          {% for lang, score in m.scores.items() %}
+          {% set maxscore = m.scores.values() | max %}
+          {% set minscore = m.scores.values() | min %}
+          {% set range = (maxscore - minscore) if (maxscore - minscore) > 0 else 1 %}
+          {% set pct = ((score - minscore) / range * 100) | round(1) %}
+          <div class="small d-flex justify-content-between"><span>{{ LANG_NAMES[lang] }}</span><span>{{ 'н/д' if score <= -100000000 else '%.4g'|format(score) }}</span></div>
+          <div class="score-bar-bg mb-2">
+            <div class="score-bar-fill badge-lang-{{ lang }}" style="width: {{ pct }}%;"></div>
+          </div>
+          {% endfor %}
+          <div class="text-muted small">Время обработки: {{ '%.3f'|format(m.time_sec*1000) }} мс
+            {% if doc.true_language %} &middot; {{ 'верно ✓' if m.correct else 'ошибка ✗' }}{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

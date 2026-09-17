@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Справка{% endblock %}
+{% block content %}
+
+<h4 class="mb-3">Справка по работе с программой</h4>
+
+<div class="accordion" id="helpAccordion">
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#h1">
+        1. Что делает эта программа?
+      </button>
+    </h2>
+    <div id="h1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        Программа автоматически определяет, на каком языке — русском или английском — написан
+        загруженный PDF-документ. Определение выполняется тремя независимыми методами:
+        <b>методом частотных слов</b>, <b>методом коротких слов</b> и <b>нейросетевым методом</b>.
+        Это позволяет сравнить методы между собой по точности и скорости работы.
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button {{ '' if expand_all else 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#h2">
+        2. Пошаговая инструкция: как загрузить и проверить документ
+      </button>
+    </h2>
+    <div id="h2" class="accordion-collapse collapse {{ 'show' if expand_all }}" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        <ol>
+          <li>Откройте раздел <b>«Главная»</b>.</li>
+          <li>В форме «Загрузить документ» нажмите «Выберите файл» и укажите свой PDF-файл (одна страница А4).</li>
+          <li>Если вы точно знаете, на каком языке написан документ — выберите его в списке «Истинный язык документа». Это не обязательно, но позволит программе посчитать точность.</li>
+          <li>Нажмите кнопку <b>«Загрузить и определить язык»</b>.</li>
+          <li>Откроется страница с результатом: язык, определённый каждым из трёх методов, оценки уверенности и время обработки.</li>
+          <li>Все загруженные документы сохраняются в разделе <b>«Тестовая коллекция»</b> — там же находится активная ссылка на сам файл.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h3">
+        3. Как посмотреть статистику, сохранить и распечатать результаты?
+      </button>
+    </h2>
+    <div id="h3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        <ul>
+          <li>Раздел <b>«Статистика»</b> показывает точность и среднее время каждого метода в виде таблицы и графиков (данные считаются по документам с указанным истинным языком).</li>
+          <li>Кнопка <b>«🖨 Печать»</b> открывает стандартное окно печати браузера для текущей страницы.</li>
+          <li>Кнопка <b>«⬇ PDF-отчёт»</b> формирует и скачивает полный отчёт по всей тестовой коллекции в формате PDF — удобно для сохранения в файл или последующей печати.</li>
+          <li>Кнопки <b>«⬇ CSV»</b> и <b>«⬇ JSON»</b> сохраняют результаты в файл для дальнейшей обработки в Excel или других программах.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button {{ '' if expand_all else 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#h4">
+        4. Описание методов определения языка
+      </button>
+    </h2>
+    <div id="h4" class="accordion-collapse collapse {{ 'show' if expand_all }}" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        <p><b>Метод частотных слов.</b> Для каждого языка заранее строится список самых часто встречающихся слов
+        (например, «и», «в», «не» для русского; «the», «of», «and» для английского). Текст документа сравнивается
+        с этими списками — побеждает язык, чьи частотные слова чаще встречаются в документе.</p>
+        <p><b>Метод коротких слов.</b> То же самое, но используются только короткие слова (до 5 букв), которые
+        обычно являются служебными и наиболее характерными для языка. Это делает метод устойчивее на очень
+        коротких документах.</p>
+        <p><b>Нейросетевой метод.</b> Текст представляется в виде числового вектора (частоты сочетаний букв), который
+        подаётся на вход обученной нейронной сети (многослойный персептрон). Сеть заранее обучена отличать русский
+        текст от английского на большом наборе примеров.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h5">
+        5. Часто задаваемые вопросы (FAQ)
+      </button>
+    </h2>
+    <div id="h5" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        <p><b>Почему кнопка загрузки неактивна?</b> — значит, ещё не построены модели (профили языков). Нажмите кнопку «Построить профили языков» ниже на этой странице.</p>
+        <p><b>Можно ли загрузить документ на другом языке?</b> — система обучена различать только русский и английский языки (согласно варианту задания №10). Другие языки будут ошибочно отнесены к одному из этих двух.</p>
+        <p><b>Что если методы дали разные ответы?</b> — это нормально для очень коротких или нетипичных текстов. Откройте карточку документа, чтобы увидеть детальные оценки уверенности каждого метода.</p>
+        <p><b>Как удалить документ из коллекции?</b> — на странице «Тестовая коллекция» нажмите кнопку «✕» в соответствующей строке.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#h6">
+        6. Служебные функции (для администратора лабораторной работы)
+      </button>
+    </h2>
+    <div id="h6" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+      <div class="accordion-body">
+        <p>Профили языков (ПОЯ) и нейросетевая модель строятся один раз на основе обучающего корпуса текстов
+        (папка <code>corpus/</code>). При необходимости их можно пересобрать прямо из интерфейса:</p>
+        <form action="{{ url_for('rebuild_profiles') }}" method="post">
+          <button type="submit" class="btn btn-warning">🔄 Построить / пересобрать профили языков</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mt-4 text-muted small">
+  Версия системы: 2.0 (веб-приложение) &middot; Вариант 10 &middot; Python 3, Flask, Bootstrap 5, scikit-learn, pdfplumber.
+</div>
+
+{% endblock %}

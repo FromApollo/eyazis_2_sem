@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+
+<div class="row">
+  <div class="col-lg-5 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          Загрузить документ
+          <span class="help-icon" data-bs-toggle="tooltip" title="Загрузите один PDF-файл (одна страница А4) с текстом на русском или английском языке. Система автоматически определит язык тремя методами.">ℹ️</span>
+        </h5>
+        <p class="text-muted small">Формат согласно варианту 10: <b>PDF</b>, языки: <b>русский</b> или <b>английский</b>.</p>
+
+        {% if not models_ready %}
+          <div class="alert alert-warning">
+            Модели ещё не построены. Перейдите в раздел <a href="{{ url_for('help_page') }}">«Справка»</a> и нажмите
+            кнопку «Построить профили языков».
+          </div>
+        {% endif %}
+
+        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label class="form-label">Файл документа (.pdf)</label>
+            <input class="form-control" type="file" name="document" accept="application/pdf" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">
+              Истинный язык документа
+              <span class="help-icon" data-bs-toggle="tooltip" title="Необязательно. Если вы знаете настоящий язык документа, укажите его — тогда система сможет посчитать точность классификации на этом документе.">ℹ️</span>
+            </label>
+            <select class="form-select" name="true_language">
+              <option value="">Не указан (без оценки точности)</option>
+              <option value="ru">Русский</option>
+              <option value="en">Английский</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" {% if not models_ready %}disabled{% endif %}>Загрузить и определить язык</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7 mb-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Краткая сводка по тестовой коллекции</h5>
+        <p class="mb-2">Всего документов в коллекции: <b>{{ total }}</b>
+          &middot; c указанным истинным языком: <b>{{ stats.labeled_count }}</b></p>
+
+        {% if stats.labeled_count > 0 %}
+        <table class="table table-sm table-bordered">
+          <thead class="table-light">
+            <tr><th>Метод</th><th>Точность</th><th>Среднее время</th></tr>
+          </thead>
+          <tbody>
+            {% for key, name in METHOD_NAMES.items() %}
+            <tr>
+              <td>{{ name }}</td>
+              <td>{{ stats.summary[key].accuracy_percent }}% ({{ stats.summary[key].correct }}/{{ stats.summary[key].total }})</td>
+              <td>{{ stats.summary[key].avg_time_ms }} мс</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{{ url_for('statistics') }}" class="btn btn-outline-primary btn-sm">Подробная статистика и графики →</a>
+        {% else %}
+        <p class="text-muted">Пока нет документов с указанным истинным языком — точность посчитать нельзя. Загрузите документ и укажите его настоящий язык, либо посмотрите тестовую коллекцию.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="card-title mb-0">Последние обработанные документы</h5>
+      <a href="{{ url_for('documents') }}" class="btn btn-sm btn-outline-secondary">Вся коллекция →</a>
+    </div>
+    {% if recent %}
+    <table class="table table-sm table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Документ (активная ссылка)</th>
+          <th>Истинный язык</th>
+          <th>Частотных слов</th>
+          <th>Коротких слов</th>
+          <th>Нейросетевой</th>
+          <th>Загружен</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in recent %}
+        <tr>
+          <td><a href="{{ url_for('serve_file', doc_id=d.id) }}" target="_blank">{{ d.original_filename }}</a></td>
+          <td><span class="badge badge-lang-{{ d.true_language or 'none' }}">{{ LANG_NAMES[d.true_language] }}</span></td>
+          {% for m in ['freq_words','short_words','neural'] %}
+          <td>
+            <span class="badge badge-lang-{{ d.methods[m].predicted }}">{{ LANG_NAMES[d.methods[m].predicted] }}</span>
+            {% if d.true_language %}{{ '✓' if d.methods[m].correct else '✗' }}{% endif %}
+          </td>
+          {% endfor %}
+          <td class="text-muted small">{{ d.uploaded_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Тестовая коллекция пуста. Загрузите первый документ с помощью формы выше.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

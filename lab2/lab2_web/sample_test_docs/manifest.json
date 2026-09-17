@@ -1,0 +1,38 @@
+[
+  {
+    "file": "doc01_ru.pdf",
+    "true_language": "ru"
+  },
+  {
+    "file": "doc02_en.pdf",
+    "true_language": "en"
+  },
+  {
+    "file": "doc03_ru.pdf",
+    "true_language": "ru"
+  },
+  {
+    "file": "doc04_en.pdf",
+    "true_language": "en"
+  },
+  {
+    "file": "doc05_ru.pdf",
+    "true_language": "ru"
+  },
+  {
+    "file": "doc06_en.pdf",
+    "true_language": "en"
+  },
+  {
+    "file": "doc07_ru_short.pdf",
+    "true_language": "ru"
+  },
+  {
+    "file": "doc08_en_short.pdf",
+    "true_language": "en"
+  },
+  {
+    "file": "doc09_ru_verytough.pdf",
+    "true_language": "ru"
+  }
+]
