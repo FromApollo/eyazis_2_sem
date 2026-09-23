@@ -33,6 +33,8 @@ app = Flask(__name__)
 app.secret_key = "lab2-variant10-secret-key"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 
+service.init_db()
+
 
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS

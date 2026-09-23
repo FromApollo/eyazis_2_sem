@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Сервисный слой веб-приложения:
- - хранение "базы данных" документов тестовой коллекции (JSON-файл);
+ - хранение базы данных документов тестовой коллекции (PostgreSQL);
  - извлечение текста из PDF;
  - прогон документа через три метода классификации;
  - подсчёт сводной статистики (точность, среднее время) по коллекции.
@@ -15,6 +15,8 @@ import uuid
 from datetime import datetime
 
 import pdfplumber
+import psycopg2
+import psycopg2.extras
 
 from .method_freq_words import FrequentWordsProfile, classify as classify_freq
 from .method_short_words import ShortWordsProfile, classify as classify_short
@@ -24,7 +26,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROFILES_DIR = os.path.join(BASE_DIR, "profiles")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-DB_PATH = os.path.join(DATA_DIR, "documents.json")
+
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://languser:langpass@localhost:5432/langdb",
+)
 
 LANGUAGES = ["ru", "en"]
 LANG_NAMES = {"ru": "Русский", "en": "Английский", None: "Не указан", "": "Не указан"}
@@ -75,19 +81,59 @@ def models_ready() -> bool:
 
 
 # --------------------------------------------------------------------------
-# "База данных" документов (JSON-файл)
+# База данных документов (PostgreSQL)
 # --------------------------------------------------------------------------
 
+def _conn():
+    return psycopg2.connect(DATABASE_URL)
+
+
+def init_db() -> None:
+    """Создаёт таблицу documents, если она ещё не существует."""
+    with _conn() as con, con.cursor() as cur:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS documents (
+                id TEXT PRIMARY KEY,
+                stored_filename TEXT NOT NULL,
+                original_filename TEXT NOT NULL,
+                uploaded_at TEXT NOT NULL,
+                file_size_kb DOUBLE PRECISION,
+                true_language TEXT,
+                text_preview TEXT,
+                text_length_chars INTEGER,
+                methods JSONB NOT NULL
+            )
+        """)
+
+
+def _row_to_record(row: dict) -> dict:
+    rec = dict(row)
+    if isinstance(rec.get("methods"), str):
+        rec["methods"] = json.loads(rec["methods"])
+    return rec
+
+
 def _load_db() -> list:
-    if not os.path.exists(DB_PATH):
-        return []
-    with open(DB_PATH, encoding="utf-8") as f:
-        return json.load(f)
+    with _conn() as con, con.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute("SELECT * FROM documents")
+        return [_row_to_record(r) for r in cur.fetchall()]
 
 
 def _save_db(records: list) -> None:
-    with open(DB_PATH, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False, indent=2)
+    """Полностью перезаписывает таблицу documents (сохранён интерфейс JSON-версии)."""
+    with _conn() as con, con.cursor() as cur:
+        cur.execute("DELETE FROM documents")
+        for r in records:
+            cur.execute(
+                """INSERT INTO documents
+                   (id, stored_filename, original_filename, uploaded_at,
+                    file_size_kb, true_language, text_preview,
+                    text_length_chars, methods)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)""",
+                (r["id"], r["stored_filename"], r["original_filename"], r["uploaded_at"],
+                 r["file_size_kb"], r.get("true_language"), r["text_preview"],
+                 r["text_length_chars"], json.dumps(r["methods"], ensure_ascii=False)),
+            )
 
 
 def _sanitize_float(v):

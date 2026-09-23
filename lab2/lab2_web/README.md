@@ -25,7 +25,7 @@ lab2_web/
 ├── profiles/                   # построенные ПОЯ и нейросетевая модель (после сборки)
 ├── sample_test_docs/           # образцы PDF для тестовой коллекции + manifest.json
 ├── uploads/                    # загруженные пользователем PDF (тестовая коллекция)
-├── data/                       # "БД" результатов (documents.json)
+├── data/                       # БД результатов — PostgreSQL (таблица documents)
 ├── screenshots/                # скриншоты интерфейса (для отчёта)
 └── requirements.txt
 ```
@@ -39,6 +39,17 @@ pip install -r requirements.txt --break-system-packages
 # Debian/Ubuntu:
 sudo apt-get install wkhtmltopdf
 ```
+
+## База данных (PostgreSQL)
+
+```sql
+CREATE USER languser WITH PASSWORD 'langpass';
+CREATE DATABASE langdb OWNER languser;
+```
+
+Строка подключения задаётся переменной окружения `DATABASE_URL`
+(по умолчанию `postgresql://languser:langpass@localhost:5432/langdb`).
+Таблица `documents` создаётся автоматически при первом запуске `app.py`.
 
 ## Запуск
 
@@ -69,6 +80,6 @@ python3 app.py
 
 ## Восстановление после сброса
 
-Если удалить `data/documents.json` и содержимое `uploads/`, коллекция
-очистится. Чтобы вернуть тестовые документы, снова запустите
-`python3 scripts/seed_test_collection.py`.
+Если очистить таблицу `documents` в PostgreSQL (`TRUNCATE documents;`) и
+содержимое `uploads/`, коллекция очистится. Чтобы вернуть тестовые
+документы, снова запустите `python3 scripts/seed_test_collection.py`.
