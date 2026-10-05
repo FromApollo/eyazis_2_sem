@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Literature Essay Voice Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+  <main class="container py-4 py-lg-5">
+    <header class="mb-4">
+      <span class="badge text-bg-primary mb-2">Lab 9 · Variant 5</span>
+      <h1 class="h2 mb-2">Literature Essay Voice Assistant</h1>
+      <p class="text-secondary mb-0">Speak an English command, dictate an essay, and inspect simple text indicators.</p>
+    </header>
+
+    <div id="status" class="alert alert-info" role="status" aria-live="polite">Ready. Choose an English dialect and start listening.</div>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <section class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="h5 card-title">Voice input</h2>
+            <div class="row g-3 align-items-end">
+              <div class="col-sm-5">
+                <label for="language" class="form-label">Recognition language</label>
+                <select id="language" class="form-select">
+                  <option value="en-US">English (US)</option>
+                  <option value="en-GB">English (UK)</option>
+                </select>
+              </div>
+              <div class="col-sm-7 d-flex gap-2">
+                <button id="listen" class="btn btn-primary flex-fill" type="button">Start listening</button>
+                <button id="stop" class="btn btn-outline-secondary" type="button" disabled>Stop</button>
+              </div>
+            </div>
+            <p class="small text-secondary mt-3 mb-1">Recognized speech</p>
+            <div id="transcript" class="transcript rounded p-2" aria-live="polite">—</div>
+          </div>
+        </section>
+
+        <section class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+              <h2 class="h5 card-title mb-0">Literature essay</h2>
+              <button id="clear" class="btn btn-sm btn-outline-danger" type="button">Clear</button>
+            </div>
+            <label for="essay" class="form-label text-secondary small">Type, paste, or say “dictate” before speaking your text.</label>
+            <textarea id="essay" class="form-control" rows="11" maxlength="10000" placeholder="In Shakespeare's Hamlet, the protagonist faces a difficult choice..."></textarea>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small id="characters" class="text-secondary">0 / 10000 characters</small>
+              <button id="analyze" class="btn btn-success" type="button">Analyze essay</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-lg-5">
+        <section class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="h5 card-title">Available spoken operations</h2>
+            <ul class="list-group list-group-flush command-list">
+              <li class="list-group-item"><strong>“Analyze essay”</strong><span>Calculate indicators</span></li>
+              <li class="list-group-item"><strong>“Dictate”</strong><span>Append the next spoken phrase</span></li>
+              <li class="list-group-item"><strong>“Read results”</strong><span>Speak the last analysis</span></li>
+              <li class="list-group-item"><strong>“Show plan”</strong><span>Display an essay outline</span></li>
+              <li class="list-group-item"><strong>“Clear essay”</strong><span>Remove the text</span></li>
+              <li class="list-group-item"><strong>“Help”</strong><span>Repeat the command list</span></li>
+            </ul>
+            <p class="small text-secondary mt-3 mb-0">A command is recognized as a complete phrase. After “Dictate”, the next phrase is added to the essay.</p>
+          </div>
+        </section>
+
+        <section id="results" class="card shadow-sm mb-4" hidden>
+          <div class="card-body">
+            <h2 class="h5 card-title">Analysis results</h2>
+            <div class="row text-center g-2 mb-3">
+              <div class="col-4"><div class="metric"><strong id="word-count">0</strong><small>Words</small></div></div>
+              <div class="col-4"><div class="metric"><strong id="sentence-count">0</strong><small>Sentences</small></div></div>
+              <div class="col-4"><div class="metric"><strong id="paragraph-count">0</strong><small>Paragraphs</small></div></div>
+            </div>
+            <h3 class="h6">Structure signals</h3>
+            <ul id="markers" class="mb-3"></ul>
+            <h3 class="h6">Frequent content words</h3>
+            <p id="top-words" class="mb-2"></p>
+            <p class="small text-secondary mb-0">Rule-based indicators only; no literary quality grade.</p>
+          </div>
+        </section>
+
+        <section id="plan" class="card shadow-sm" hidden>
+          <div class="card-body">
+            <h2 class="h5 card-title">Suggested essay plan</h2>
+            <ol class="mb-0">
+              <li>Introduction: name the work and state a thesis.</li>
+              <li>Body: explain an idea with evidence from the text.</li>
+              <li>Conclusion: return to the thesis and summarize the argument.</li>
+            </ol>
+          </div>
+        </section>
+      </div>
+    </div>
+    <p class="small text-secondary mt-4">Speech recognition and synthesis use your browser and its installed voices. Microphone access may require permission.</p>
+  </main>
+</body>
+</html>
