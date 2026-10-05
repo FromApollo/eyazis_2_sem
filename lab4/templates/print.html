@@ -1,0 +1,11 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Печать · {{ run.title }}</title>
+<style>body{font:14px Arial,sans-serif;max-width:900px;margin:24px auto;color:#111}pre{white-space:pre-wrap;font:inherit}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:5px;text-align:left}h1{font-size:22px}h2{font-size:17px;margin-top:24px}.actions{margin-bottom:24px}@media print{.actions{display:none}body{margin:0}}</style></head><body>
+<div class="actions"><button onclick="window.print()">Печать / сохранить в PDF</button> <a href="{{ url_for('run_detail', run_id=run.id) }}">Назад</a></div>
+<h1>Перевод EN → DE: {{ run.title }}</h1>
+<p>{{ domains[run.domain] }} · {{ run.created_at.strftime('%d.%m.%Y %H:%M') }}<br>Слов: {{ run.word_count }} · Переведено: {{ run.translated_count }}</p>
+<h2>Исходный текст</h2><pre>{{ run.source_text }}</pre>
+<h2>Перевод</h2><pre>{{ run.translated_text }}</pre>
+<h2>Частотный словарь</h2>
+<table><thead><tr><th>Частота</th><th>Слово</th><th>Перевод</th><th>POS</th><th>Расшифровка</th></tr></thead><tbody>
+{% for row in run.result.rows %}<tr><td>{{ row.frequency }}</td><td>{{ row.word }}</td><td>{{ row.translation or '—' }}</td><td>{{ row.tag }}</td><td>{{ row.meaning }}</td></tr>{% endfor %}
+</tbody></table></body></html>

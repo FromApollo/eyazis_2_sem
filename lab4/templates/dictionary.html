@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Словарь · EN → DE{% endblock %}
+{% block content %}
+<h1 class="h3">Редактор словаря</h1>
+<p class="text-muted">Новые незнакомые слова появляются здесь автоматически. После исправления переведите исходный текст повторно.</p>
+<div class="card mb-4"><div class="card-body">
+  <h2 class="h5">Добавить слово или выражение</h2>
+  <form action="{{ url_for('dictionary_add') }}" method="post" class="row g-2 align-items-end">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="col-md-3"><label class="form-label">Английское</label><input class="form-control" name="english" required maxlength="120"></div>
+    <div class="col-md-3"><label class="form-label">Немецкое</label><input class="form-control" name="german" required maxlength="240"></div>
+    <div class="col-md-2"><label class="form-label">POS</label><input class="form-control" name="pos" value="*" maxlength="20" title="* — любое; NN — существительное; VB — глагол"></div>
+    <div class="col-md-2"><label class="form-label">Область</label><select class="form-select" name="domain"><option value="general">Общая</option>{% for key, label in domains.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><button class="btn btn-primary w-100">Добавить</button></div>
+  </form>
+</div></div>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-6"><input class="form-control" name="q" value="{{ query }}" placeholder="Поиск по английскому или немецкому слову"></div>
+  <div class="col-md-3"><select class="form-select" name="status"><option value="all">Все записи</option><option value="missing" {% if status == 'missing' %}selected{% endif %}>Без перевода</option></select></div>
+  <div class="col-md-3"><button class="btn btn-outline-primary">Показать</button></div>
+</form>
+<div class="text-muted mb-2">Найдено: {{ total }}</div>
+<div class="table-responsive"><table class="table table-striped align-middle">
+  <thead><tr><th>Английское</th><th>POS</th><th>Область</th><th style="min-width:260px">Немецкий перевод</th><th></th></tr></thead>
+  <tbody>{% for entry in entries %}<tr>
+    <td>{{ entry.english }}</td><td><code>{{ entry.pos }}</code></td><td>{{ domains.get(entry.domain, 'Общая') }}</td>
+    <td><form class="d-flex gap-2" method="post" action="{{ url_for('dictionary_edit', entry_id=entry.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input class="form-control form-control-sm" name="german" value="{{ entry.german }}" maxlength="240"><button class="btn btn-sm btn-outline-success">Сохранить</button></form></td>
+    <td><form method="post" action="{{ url_for('dictionary_delete', entry_id=entry.id) }}" onsubmit="return confirm('Удалить запись?')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn btn-sm btn-outline-danger">Удалить</button></form></td>
+  </tr>{% else %}<tr><td colspan="5" class="text-muted">Записи не найдены.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% if total > 50 %}<nav class="d-flex gap-2"><a class="btn btn-outline-secondary {% if page == 1 %}disabled{% endif %}" href="{{ url_for('dictionary_view', q=query, status=status, page=page-1) }}">Назад</a><span class="align-self-center">Страница {{ page }} из {{ (total + 49) // 50 }}</span><a class="btn btn-outline-secondary {% if page * 50 >= total %}disabled{% endif %}" href="{{ url_for('dictionary_view', q=query, status=status, page=page+1) }}">Далее</a></nav>{% endif %}
+{% endblock %}

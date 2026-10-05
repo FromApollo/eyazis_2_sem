@@ -1,0 +1,16 @@
+body{background:#f8f9fa}
+.card{box-shadow:0 1px 3px #0000000d}
+.preserve{white-space:pre-wrap;overflow-wrap:anywhere}
+.tree-box{background:#fbfcfe;border:1px solid #dee2e6;border-radius:6px;padding:1.25rem;overflow:auto}
+.syntax-tree,.syntax-tree ul{list-style:none;margin:0;padding:0}
+.syntax-tree ul{margin-left:1.1rem;padding-left:1.3rem;border-left:2px solid #adb5bd}
+.syntax-tree li{position:relative;padding:.22rem 0}
+.syntax-tree ul>li::before{content:"";position:absolute;left:-1.3rem;top:1.25rem;width:1.3rem;border-top:2px solid #adb5bd}
+.syntax-tree ul>li:last-child::after{content:"";position:absolute;left:-1.4rem;top:1.25rem;bottom:0;width:3px;background:#fbfcfe}
+.syntax-node{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.45rem;padding:.32rem .65rem;border-radius:.45rem;min-height:2rem}
+.syntax-branch{background:#e7f0ff;border:1px solid #8cb4ea;color:#17477f}
+.syntax-branch span{font-size:.82rem;color:#49596b}
+.syntax-leaf{background:#e7f5ec;border:1px solid #81c59a;color:#165b32}
+.syntax-leaf-mark{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#297348}
+.syntax-leaf code{background:#fff;border:1px solid #b9ddc5;border-radius:.25rem;padding:.05rem .25rem;color:#135b35}
+.syntax-description{font-size:.82rem;color:#53665a}

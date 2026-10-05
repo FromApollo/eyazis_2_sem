@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.pdf_check/
+.nltk_data/
+.report_work/
+*.pyc
+.env

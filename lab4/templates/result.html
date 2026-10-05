@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{ run.title }} · EN → DE{% endblock %}
+{% macro render_node(node) %}
+<li>
+  {% if node.leaf %}
+    <div class="syntax-node syntax-leaf" title="Лист дерева: {{ node.word }}, {{ node.meaning }}">
+      <span class="syntax-leaf-mark">Лист</span>
+      <strong>{{ node.word }}</strong>
+      <code>{{ node.pos }}</code>
+      <span class="syntax-description">{{ node.meaning }}</span>
+    </div>
+  {% else %}
+    <div class="syntax-node syntax-branch"><strong>{{ node.label }}</strong><span>{{ node.meaning }}</span></div>
+    <ul>{% for child in node.children %}{{ render_node(child) }}{% endfor %}</ul>
+  {% endif %}
+</li>
+{% endmacro %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div><h1 class="h3 mb-1">{{ run.title }}</h1><div class="text-muted">{{ domains[run.domain] }} · {{ run.created_at.strftime('%d.%m.%Y %H:%M') }}</div></div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{{ url_for('export_run', run_id=run.id) }}">Скачать TXT</a>
+    <a class="btn btn-outline-secondary" target="_blank" href="{{ url_for('print_run', run_id=run.id) }}">Распечатать</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6"><div class="card"><div class="card-body"><div class="text-muted">Слов во входном тексте</div><div class="fs-3">{{ run.word_count }}</div></div></div></div>
+  <div class="col-sm-6"><div class="card"><div class="card-body"><div class="text-muted">Переведено слов</div><div class="fs-3">{{ run.translated_count }}</div></div></div></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Исходный текст</div><div class="card-body preserve">{{ run.source_text }}</div></div></div>
+  <div class="col-lg-6"><div class="card h-100"><div class="card-header">Перевод</div><div class="card-body preserve">{{ run.translated_text }}</div></div></div>
+</div>
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#words" type="button" role="tab">1. Частотный словарь</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tree" type="button" role="tab">2. Синтаксическое дерево</button></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="words" role="tabpanel">
+    <p class="text-muted">Слова упорядочены по частоте. «—» означает, что перевод нужно добавить в <a href="{{ url_for('dictionary_view', status='missing') }}">словарь</a>.</p>
+    <div class="table-responsive"><table class="table table-striped table-sm align-middle">
+      <thead><tr><th>Частота</th><th>Слово</th><th>Перевод</th><th>POS</th><th>Расшифровка</th></tr></thead>
+      <tbody>{% for row in run.result.rows %}<tr><td>{{ row.frequency }}</td><td>{{ row.word }}</td><td>{{ row.translation or '—' }}</td><td><code>{{ row.tag }}</code></td><td>{{ row.meaning }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+  <div class="tab-pane fade" id="tree" role="tabpanel">
+    <label class="form-label" for="sentence-select">Выберите предложение</label>
+    <select class="form-select mb-3" id="sentence-select" onchange="showSentence(this.value)">
+      {% for sentence in run.result.sentences %}<option value="{{ loop.index0 }}" {% if loop.index0 == selected %}selected{% endif %}>{{ loop.index }}. {{ sentence.text[:130] }}</option>{% endfor %}
+    </select>
+    {% for sentence in run.result.sentences %}
+      <div class="sentence-panel" id="sentence-{{ loop.index0 }}" {% if loop.index0 != selected %}hidden{% endif %}>
+        <p>{{ sentence.text }}</p>
+        <div class="tree-box"><ul class="syntax-tree">{{ render_node(trees[loop.index0]) }}</ul></div>
+        <p class="form-text mt-2">Синие узлы — группы, зеленые узлы — листья (слова). Линии показывают, к какой группе относится каждый лист.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+function showSentence(value) {
+  document.querySelectorAll('.sentence-panel').forEach(el => el.hidden = true);
+  document.getElementById('sentence-' + value).hidden = false;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Перевод · EN → DE{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <h1 class="h3 mb-2">Англо-немецкий перевод</h1>
+    <p class="text-muted">Вариант 3 · Научные статьи по computer science и сочинения по литературе</p>
+    <div class="alert alert-light border mb-4">
+      <div class="fw-semibold mb-2">Примеры текстов</div>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <button type="button" class="btn btn-sm btn-outline-primary sample-button" data-domain="computer_science" data-title="Пример: computer science" data-url="{{ url_for('static', filename='samples/computer_science.txt') }}">Подставить статью по computer science</button>
+        <button type="button" class="btn btn-sm btn-outline-primary sample-button" data-domain="literature" data-title="Пример: сочинение по литературе" data-url="{{ url_for('static', filename='samples/literature.txt') }}">Подставить сочинение</button>
+        <span class="small text-muted">TXT: <a href="{{ url_for('static', filename='samples/computer_science.txt') }}" download>статья</a> · <a href="{{ url_for('static', filename='samples/literature.txt') }}" download>сочинение</a></span>
+      </div>
+    </div>
+    <div class="card mb-4"><div class="card-body">
+      <form action="{{ url_for('translate') }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="row g-3">
+          <div class="col-md-7">
+            <label class="form-label" for="title">Название (необязательно)</label>
+            <input class="form-control" id="title" name="title" maxlength="160" placeholder="Например, статья об алгоритмах">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label" for="domain">Предметная область</label>
+            <select class="form-select" id="domain" name="domain">
+              {% for key, label in domains.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="text">Английский текст</label>
+            <textarea class="form-control" id="text" name="text" rows="9" maxlength="30000" placeholder="The algorithm processes data. The results show improved accuracy."></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="file">Или загрузите TXT в UTF-8</label>
+            <input class="form-control" id="file" name="file" type="file" accept=".txt,text/plain">
+            <div class="form-text">Файл заменяет текст в поле выше.</div>
+          </div>
+          <div class="col-12"><button class="btn btn-primary" type="submit">Перевести и проанализировать</button></div>
+        </div>
+      </form>
+    </div></div>
+    {% if recent %}
+      <h2 class="h5">Последние результаты</h2>
+      <div class="list-group">
+        {% for run in recent %}
+          <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{{ url_for('run_detail', run_id=run.id) }}">
+            <span>{{ run.title }}</span><small class="text-muted">{{ run.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+document.querySelectorAll('.sample-button').forEach(button => {
+  button.addEventListener('click', async () => {
+    const response = await fetch(button.dataset.url);
+    if (!response.ok) { alert('Не удалось загрузить пример текста.'); return; }
+    document.getElementById('text').value = await response.text();
+    document.getElementById('domain').value = button.dataset.domain;
+    document.getElementById('title').value = button.dataset.title;
+    document.getElementById('file').value = '';
+    document.getElementById('text').focus();
+  });
+});
+</script>
+{% endblock %}
