@@ -1,0 +1,4 @@
+body { background: #f5f7fb; color: #1d2939; }
+.card { border-radius: 1rem; }
+textarea { resize: vertical; min-height: 190px; }
+.form-range { margin-top: .4rem; }
