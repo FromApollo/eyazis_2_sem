@@ -1,0 +1,6 @@
+[
+  {"file": "en_medicine.txt", "title": "Sleep and cardiovascular health", "language": "en", "domain": "Медицина"},
+  {"file": "es_medicine.txt", "title": "Sueño y salud cardiovascular", "language": "es", "domain": "Медицина"},
+  {"file": "en_art.txt", "title": "A study of light in landscape painting", "language": "en", "domain": "Критика искусства"},
+  {"file": "es_art.txt", "title": "La luz en la pintura de paisaje", "language": "es", "domain": "Критика искусства"}
+]

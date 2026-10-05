@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Результат · Рефератор{% endblock %}
+{% block content %}
+<div class="d-print-none mb-3"><a href="{{ url_for('index') }}">← Выбрать другой документ</a></div>
+<div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+  <div><h1 class="h2 mb-1">{{ item.title }}</h1><p class="text-muted">{{ 'Английский' if item.language == 'en' else 'Испанский' }} · {{ item.domain }} · {{ 'Sentence extraction' if result.method == 'sentence' else 'LSA' }} · {{ result.total_sentences }} предложений в источнике</p></div>
+  <div class="d-print-none d-flex gap-2"><button class="btn btn-outline-secondary" onclick="window.print()">Печать</button>
+    <form action="{{ url_for('download') }}" method="post"><input type="hidden" name="title" value="{{ item.title }}"><input type="hidden" name="source_url" value="{{ source_url if source_url else url_for('source', filename=item.file, _external=True) }}">
+      {% for sentence in result.sentences %}<input type="hidden" name="sentences" value="{{ sentence.text }}">{% endfor %}
+      {% for keyword in result.keywords %}<input type="hidden" name="keywords" value="{{ keyword.term }}">{% endfor %}
+      <button class="btn btn-primary" type="submit">Сохранить .txt</button></form></div>
+</div>
+<p><strong>Исходный документ:</strong> <a target="_blank" href="{{ source_url if source_url else url_for('source', filename=item.file, _external=True) }}">открыть полный текст ↗</a></p>
+<div class="card shadow-sm mb-4"><div class="card-body"><h2 class="h4">Классический реферат</h2>
+  {% for sentence in result.sentences %}<p class="summary-sentence mb-2">{{ sentence.text }}</p>{% endfor %}
+</div></div>
+<div class="card shadow-sm"><div class="card-body"><h2 class="h4">Ключевые слова</h2><p class="mb-0">{% for keyword in result.keywords %}<span class="badge rounded-pill text-bg-light border keyword" title="Вес TF-IDF: {{ keyword.weight }}">{{ keyword.term }}</span>{% endfor %}</p></div></div>
+<p class="small text-muted mt-3">Предложения показаны в порядке исходного текста. Число выбранных предложений: {{ result.sentences|length }}.</p>
+{% endblock %}

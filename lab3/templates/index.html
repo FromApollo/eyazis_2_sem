@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row align-items-end mb-4"><div class="col-lg-9">
+  <h1 class="h2">Автоматическое реферирование</h1>
+  <p class="lead mb-0">Выберите пример или загрузите свой текст. Система покажет классический реферат и ключевые слова.</p>
+</div></div>
+<div class="row g-4"><div class="col-lg-7"><div class="card shadow-sm h-100"><div class="card-body">
+  <h2 class="h5">Тестовая коллекция</h2>
+  <form action="{{ url_for('summarize_route') }}" method="post">
+    <label class="form-label" for="document">Исходный документ</label>
+    <select class="form-select mb-3" id="document" name="document">
+      {% for doc in documents %}<option value="{{ doc.file }}">{{ doc.title }} · {{ 'английский' if doc.language == 'en' else 'испанский' }} · {{ doc.domain }}</option>{% endfor %}
+    </select>
+    <div class="row g-3"><div class="col-sm-8"><label class="form-label" for="method">Метод</label>
+      <select class="form-select" name="method" id="method"><option value="sentence">Sentence extraction по методичке</option><option value="lsa">Латентно семантический анализ (LSA)</option></select>
+    </div><div class="col-sm-4"><label class="form-label" for="count">Предложений</label><input class="form-control" type="number" id="count" name="count" min="1" max="20" value="10"></div></div>
+    <button class="btn btn-primary mt-4" type="submit">Построить реферат</button>
+  </form>
+</div></div></div>
+<div class="col-lg-5"><div class="card shadow-sm h-100"><div class="card-body">
+  <h2 class="h5">Свой документ</h2><p class="text-muted">Текстовый файл UTF-8 до 2 МБ, на английском или испанском.</p>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <label class="form-label" for="file">Файл .txt</label><input class="form-control mb-3" id="file" name="file" type="file" accept=".txt,text/plain" required>
+    <label class="form-label" for="language">Язык</label><select class="form-select mb-3" id="language" name="language"><option value="en">Английский</option><option value="es">Испанский</option></select>
+    <label class="form-label" for="upload_method">Метод</label><select class="form-select" id="upload_method" name="method"><option value="sentence">Sentence extraction</option><option value="lsa">LSA</option></select>
+    <button class="btn btn-outline-primary mt-4" type="submit">Загрузить и обработать</button>
+  </form>
+</div></div></div></div>
+{% endblock %}

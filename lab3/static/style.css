@@ -1,0 +1,5 @@
+body { background: #f6f8fb; color: #243044; }
+.card { border: 1px solid #e3e8ef; border-radius: .8rem; }
+.keyword { font-size: .95rem; margin: 0 .35rem .45rem 0; padding: .6rem .8rem; }
+.summary-sentence { line-height: 1.65; }
+@media print { body { background: white; } .card { box-shadow: none !important; break-inside: avoid; } a { color: black; text-decoration: none; } }

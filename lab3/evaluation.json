@@ -1,0 +1,250 @@
+[
+  {
+    "file": "en_medicine.txt",
+    "domain": "Медицина",
+    "language": "en",
+    "method": "sentence",
+    "selected": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      17
+    ],
+    "reference": [
+      2,
+      6,
+      9,
+      11,
+      16,
+      21,
+      25,
+      26
+    ],
+    "precision_at_10": 0.3,
+    "recall_at_8": 0.38,
+    "mean_ms": 1.21
+  },
+  {
+    "file": "en_medicine.txt",
+    "domain": "Медицина",
+    "language": "en",
+    "method": "lsa",
+    "selected": [
+      2,
+      4,
+      6,
+      7,
+      12,
+      16,
+      22,
+      23,
+      26,
+      27
+    ],
+    "reference": [
+      2,
+      6,
+      9,
+      11,
+      16,
+      21,
+      25,
+      26
+    ],
+    "precision_at_10": 0.4,
+    "recall_at_8": 0.5,
+    "mean_ms": 4.72
+  },
+  {
+    "file": "es_medicine.txt",
+    "domain": "Медицина",
+    "language": "es",
+    "method": "sentence",
+    "selected": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      17
+    ],
+    "reference": [
+      2,
+      6,
+      9,
+      11,
+      16,
+      21,
+      25,
+      26
+    ],
+    "precision_at_10": 0.3,
+    "recall_at_8": 0.38,
+    "mean_ms": 1.23
+  },
+  {
+    "file": "es_medicine.txt",
+    "domain": "Медицина",
+    "language": "es",
+    "method": "lsa",
+    "selected": [
+      2,
+      3,
+      11,
+      12,
+      18,
+      22,
+      23,
+      24,
+      27,
+      28
+    ],
+    "reference": [
+      2,
+      6,
+      9,
+      11,
+      16,
+      21,
+      25,
+      26
+    ],
+    "precision_at_10": 0.2,
+    "recall_at_8": 0.25,
+    "mean_ms": 5.03
+  },
+  {
+    "file": "en_art.txt",
+    "domain": "Критика искусства",
+    "language": "en",
+    "method": "sentence",
+    "selected": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      11,
+      12,
+      17
+    ],
+    "reference": [
+      3,
+      7,
+      12,
+      16,
+      19,
+      25,
+      26,
+      30
+    ],
+    "precision_at_10": 0.3,
+    "recall_at_8": 0.38,
+    "mean_ms": 1.21
+  },
+  {
+    "file": "en_art.txt",
+    "domain": "Критика искусства",
+    "language": "en",
+    "method": "lsa",
+    "selected": [
+      2,
+      8,
+      9,
+      11,
+      13,
+      15,
+      16,
+      18,
+      23,
+      27
+    ],
+    "reference": [
+      3,
+      7,
+      12,
+      16,
+      19,
+      25,
+      26,
+      30
+    ],
+    "precision_at_10": 0.1,
+    "recall_at_8": 0.12,
+    "mean_ms": 4.64
+  },
+  {
+    "file": "es_art.txt",
+    "domain": "Критика искусства",
+    "language": "es",
+    "method": "sentence",
+    "selected": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13
+    ],
+    "reference": [
+      3,
+      7,
+      12,
+      16,
+      19,
+      25,
+      26,
+      30
+    ],
+    "precision_at_10": 0.3,
+    "recall_at_8": 0.38,
+    "mean_ms": 1.18
+  },
+  {
+    "file": "es_art.txt",
+    "domain": "Критика искусства",
+    "language": "es",
+    "method": "lsa",
+    "selected": [
+      2,
+      5,
+      8,
+      11,
+      13,
+      14,
+      16,
+      24,
+      28,
+      29
+    ],
+    "reference": [
+      3,
+      7,
+      12,
+      16,
+      19,
+      25,
+      26,
+      30
+    ],
+    "precision_at_10": 0.1,
+    "recall_at_8": 0.12,
+    "mean_ms": 4.75
+  }
+]
