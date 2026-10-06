@@ -4,17 +4,17 @@ from io import BytesIO
 import json
 from pathlib import Path
 from urllib.parse import urlparse
-from uuid import uuid4
 
 from flask import Flask, abort, render_template, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
+from database import (DatabaseUnavailable, create_document, get_document,
+                      initialize_database, save_summary)
 from summarizer import summarize
 
 
 ROOT = Path(__file__).parent
 CORPUS_DIR = ROOT / "corpus"
-UPLOAD_DIR = ROOT / "uploads"
 DOCUMENTS = json.loads((CORPUS_DIR / "manifest.json").read_text(encoding="utf-8"))
 DOCUMENT_BY_FILE = {item["file"]: item for item in DOCUMENTS}
 app = Flask(__name__)
@@ -48,14 +48,16 @@ def source(filename):
                      download_name=filename, as_attachment=False)
 
 
-@app.get("/source/upload/<filename>")
-def uploaded_source(filename):
-    if not filename.endswith(".txt") or len(filename) != 36:
+@app.get("/source/upload/<int:document_id>")
+def uploaded_source(document_id):
+    try:
+        document = get_document(document_id)
+    except DatabaseUnavailable as error:
+        return render_template("error.html", message=str(error)), 503
+    if document is None:
         abort(404)
-    path = UPLOAD_DIR / filename
-    if not path.is_file():
-        abort(404)
-    return send_file(path, mimetype="text/plain; charset=utf-8", as_attachment=False)
+    return send_file(BytesIO(document["content"].encode("utf-8")), mimetype="text/plain; charset=utf-8",
+                     download_name=document["original_filename"], as_attachment=False)
 
 
 @app.post("/summarize")
@@ -89,12 +91,16 @@ def upload():
         return render_template("error.html", message="Файл должен иметь кодировку UTF-8."), 400
     if len(text.strip()) < 50:
         return render_template("error.html", message="Текст слишком короткий: нужно не менее 50 символов."), 400
-    UPLOAD_DIR.mkdir(exist_ok=True)
-    stored_name = f"{uuid4().hex}.txt"
-    (UPLOAD_DIR / stored_name).write_text(text, encoding="utf-8")
-    result = summarize(text, language, corpus_for(language), method)
-    item = {"title": secure_filename(file.filename), "language": language, "domain": "Загруженный текст"}
-    source_url = url_for("uploaded_source", filename=stored_name, _external=True)
+    filename = secure_filename(file.filename) or "document.txt"
+    try:
+        initialize_database()
+        document_id = create_document(filename, language, text)
+        result = summarize(text, language, corpus_for(language), method)
+        save_summary(document_id, method, 10, result)
+    except DatabaseUnavailable as error:
+        return render_template("error.html", message=str(error)), 503
+    item = {"title": filename, "language": language, "domain": "Загруженный текст"}
+    source_url = url_for("uploaded_source", document_id=document_id, _external=True)
     return render_template("result.html", item=item, result=result, count=10,
                            source_url=source_url, uploaded=True)
 
