@@ -1,5 +1,6 @@
 import io
 import unittest
+from unittest.mock import patch
 
 from app import DOCUMENTS, app, corpus_for, read_document
 from summarizer import sentence_extraction, split_sentences, summarize, terms
@@ -60,12 +61,15 @@ class RoutesTests(unittest.TestCase):
         self.assertIn(b"First sentence.", downloaded.data)
 
     def test_upload_and_errors(self):
-        response = self.client.post("/upload", data={"language": "en", "method": "sentence",
-            "file": (io.BytesIO(b"A clear first sentence. A second sentence describes the topic. "
-                                b"A third sentence adds useful detail. A fourth sentence concludes."), "sample.txt")},
-            content_type="multipart/form-data")
+        with (patch("app.initialize_database"), patch("app.create_document", return_value=42),
+              patch("app.save_summary") as save_summary):
+            response = self.client.post("/upload", data={"language": "en", "method": "sentence",
+                "file": (io.BytesIO(b"A clear first sentence. A second sentence describes the topic. "
+                                    b"A third sentence adds useful detail. A fourth sentence concludes."), "sample.txt")},
+                content_type="multipart/form-data")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"/source/upload/", response.data)
+        self.assertIn(b"/source/upload/42", response.data)
+        save_summary.assert_called_once()
         self.assertEqual(self.client.get("/source/unknown.txt").status_code, 404)
         self.assertEqual(self.client.post("/summarize", data={"document": "../x.txt"}).status_code, 400)
 
