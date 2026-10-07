@@ -128,7 +128,58 @@ def _phrase(tokens, index, dictionary):
     return 0, ""
 
 
-def analyze(text: str, dictionary: dict) -> dict:
+def _translated_units(tokens, dictionary: dict):
+    """Create lexical units for the transfer stage, keeping known phrases whole."""
+    units = []
+    translated_count = 0
+    i = 0
+    while i < len(tokens):
+        size, german = _phrase(tokens, i, dictionary)
+        if size:
+            units.append({"source": " ".join(item[2] for item in tokens[i:i + size]),
+                          "tag": "PHRASE", "german": german})
+            translated_count += size
+            i += size
+            continue
+        source, tag = tokens[i][2], tokens[i][4]
+        found = lookup(source, tag, dictionary)
+        german = found or f"[[{source}]]"
+        if found:
+            translated_count += 1
+        if tag.startswith("NN"):
+            german = german[0].upper() + german[1:]
+        units.append({"source": source, "tag": tag, "german": german})
+        i += 1
+    return units, translated_count
+
+
+def _synthesize_german(units: list[dict], ending: str) -> str:
+    """Synthesize a simple German clause after lexical and role transfer."""
+    if not units:
+        return ending
+    finite = next((i for i, unit in enumerate(units)
+                   if unit["tag"] == "MD" or unit["tag"].startswith("VB")), None)
+    if finite is None:
+        words = [unit["german"] for unit in units]
+    elif units[0]["source"].lower() in {"if", "because", "although", "while"} and finite > 1:
+        # German transfer rule for simple subordinate clauses: finite verb last.
+        words = ([units[0]["german"]]
+                 + [unit["german"] for unit in units[1:finite]]
+                 + [unit["german"] for unit in units[finite + 1:]]
+                 + [units[finite]["german"]])
+    else:
+        # Main clause: subject, finite verb, then the predicate.
+        words = [unit["german"] for unit in units[:finite + 1]]
+        words += [unit["german"] for unit in units[finite + 1:]]
+    result = " ".join(word for word in words if word).strip()
+    if result:
+        result = result[0].upper() + result[1:]
+    return result + ending
+
+
+def analyze(text: str, dictionary: dict, method: str = "transfer") -> dict:
+    if method not in {"transfer", "direct"}:
+        raise ValueError("Unknown translation method")
     ensure_nltk_model()
     parser = RegexpParser(GRAMMAR)
     sentences = []
@@ -156,6 +207,22 @@ def analyze(text: str, dictionary: dict) -> dict:
             "tokens": [{"word": word, "tag": tag, "meaning": POS_NAMES.get(tag, "другая часть речи")}
                        for word, tag in tags],
         })
+
+        if method == "transfer":
+            units, sentence_translated = _translated_units(tokens, dictionary)
+            ending_match = re.search(r"[.!?]+\s*$", raw)
+            ending = ending_match.group().strip() if ending_match else ""
+            output.append(_synthesize_german(units, ending))
+            output.append("\n" if raw.endswith("\n") else " ")
+            translated_count += sentence_translated
+            for token in tokens:
+                word, tag = token[2].lower(), token[4]
+                frequencies[word] += 1
+                tag_frequencies.setdefault(word, Counter())[tag] += 1
+                seen_words.add((word, tag))
+                if not lookup(token[2], tag, dictionary):
+                    seen_unknown.add((word, tag))
+            continue
 
         i = 0
         while i < len(tokens):
@@ -187,13 +254,14 @@ def analyze(text: str, dictionary: dict) -> dict:
                 if source[0].isupper() and (i == 0 or tag.startswith("NNP")):
                     german = german[0].upper() + german[1:]
             else:
-                german = source
+                german = f"[[{source}]]"
                 seen_unknown.add((source.lower(), tag))
             output.extend((text[cursor:token[0]], german))
             cursor = token[1]
             i += 1
 
-    output.append(text[cursor:])
+    if method == "direct":
+        output.append(text[cursor:])
     rows = []
     for word, count in sorted(frequencies.items(), key=lambda x: (-x[1], x[0])):
         tags = [tag for tag, _ in tag_frequencies[word].most_common()]
@@ -204,11 +272,12 @@ def analyze(text: str, dictionary: dict) -> dict:
             "frequency": count,
         })
     return {
-        "translated_text": "".join(output),
+        "translated_text": "".join(output).strip(),
         "word_count": sum(frequencies.values()),
         "translated_count": translated_count,
         "rows": rows,
         "sentences": sentences,
         "unknown": sorted(seen_unknown),
         "seen_words": sorted(seen_words),
+        "method": method,
     }

@@ -4,6 +4,7 @@ import io
 import os
 import secrets
 from datetime import datetime
+from pathlib import Path
 
 from flask import Flask, abort, flash, redirect, render_template, request, send_file, session, url_for
 from sqlalchemy import case, create_engine, func, or_, select
@@ -14,7 +15,26 @@ from models import Base, DictionaryEntry, TranslationRun
 from seed_data import seed_rows
 
 
+def load_local_env() -> None:
+    """Load simple KEY=VALUE settings from the project .env file once."""
+    env_file = Path(__file__).with_name(".env")
+    if not env_file.exists():
+        return
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+load_local_env()
+
 DOMAINS = {"computer_science": "Computer science", "literature": "Литература"}
+METHODS = {
+    "transfer": "Непрямой перевод с трансфером",
+    "direct": "Прямой пословно-оборотный перевод",
+}
 MAX_TEXT = 30000
 
 
@@ -35,7 +55,7 @@ def create_app(test_config=None):
     def common():
         if "csrf_token" not in session:
             session["csrf_token"] = secrets.token_urlsafe(24)
-        return {"domains": DOMAINS, "csrf_token": session["csrf_token"]}
+        return {"domains": DOMAINS, "methods": METHODS, "csrf_token": session["csrf_token"]}
 
     def check_csrf():
         if not secrets.compare_digest(request.form.get("csrf_token", ""), session.get("csrf_token", "")):
@@ -65,8 +85,11 @@ def create_app(test_config=None):
     def translate():
         check_csrf()
         domain = request.form.get("domain", "computer_science")
+        method = request.form.get("method", "transfer")
         if domain not in DOMAINS:
             abort(400, "Неизвестная предметная область")
+        if method not in METHODS:
+            abort(400, "Неизвестный метод перевода")
         text = request.form.get("text", "").strip()
         upload = request.files.get("file")
         if upload and upload.filename:
@@ -94,7 +117,7 @@ def create_app(test_config=None):
                 if entry.german or key not in dictionary:
                     dictionary[key] = entry.german
             try:
-                result = analyze(text, dictionary)
+                result = analyze(text, dictionary, method=method)
             except RuntimeError as exc:
                 flash(str(exc), "danger")
                 return redirect(url_for("index"))
@@ -109,7 +132,10 @@ def create_app(test_config=None):
                 title=title, domain=domain, source_text=text,
                 translated_text=result["translated_text"],
                 word_count=result["word_count"], translated_count=result["translated_count"],
-                result={"rows": result["rows"], "sentences": result["sentences"]},
+                result={
+                    "rows": result["rows"], "sentences": result["sentences"],
+                    "method": result["method"], "unknown": result["unknown"],
+                },
             )
             db.add(run)
             db.flush()
@@ -138,6 +164,7 @@ def create_app(test_config=None):
             "Лабораторная работа 4. Вариант 3: англо-немецкий перевод",
             f"Название: {run.title}",
             f"Предметная область: {DOMAINS[run.domain]}",
+            f"Метод перевода: {METHODS.get(run.result.get('method'), METHODS['direct'])}",
             f"Дата: {run.created_at:%Y-%m-%d %H:%M}",
             f"Слов во входном тексте: {run.word_count}",
             f"Переведено слов: {run.translated_count}",

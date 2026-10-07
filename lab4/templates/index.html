@@ -28,6 +28,13 @@
             </select>
           </div>
           <div class="col-12">
+            <label class="form-label" for="method">Метод перевода</label>
+            <select class="form-select" id="method" name="method">
+              {% for key, label in methods.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+            </select>
+            <div class="form-text">Доступны два метода: прямой словарный перевод и непрямой перевод с анализом, трансфером структуры и синтезом немецкой фразы.</div>
+          </div>
+          <div class="col-12">
             <label class="form-label" for="text">Английский текст</label>
             <textarea class="form-control" id="text" name="text" rows="9" maxlength="30000" placeholder="The algorithm processes data. The results show improved accuracy."></textarea>
           </div>

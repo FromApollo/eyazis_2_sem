@@ -54,9 +54,10 @@ class TranslationAppTests(unittest.TestCase):
         self.assertEqual(self.client.get(f"/runs/{run_id}/print").status_code, 200)
 
     def test_unknown_word_is_added_then_corrected(self):
-        self.client.post("/translate", data={
+        first = self.client.post("/translate", data={
             "csrf_token": self.token(), "domain": "literature", "text": "The moonbeam shines."
-        })
+        }, follow_redirects=True)
+        self.assertIn(b"[[moonbeam]]", first.data)
         engine = self.app.extensions["db_engine"]
         with Session(engine) as db:
             entry = db.scalar(select(DictionaryEntry).where(DictionaryEntry.english == "moonbeam"))
@@ -77,6 +78,12 @@ class TranslationAppTests(unittest.TestCase):
         result = analyze("Classifiers work.", dictionary)
         self.assertIn("Klassifikator", result["translated_text"])
         self.assertEqual(result["word_count"], 2)
+
+    def test_transfer_mode_moves_finite_verb_to_end_of_simple_subordinate_clause(self):
+        dictionary = {(word, pos): german for word, pos, german, _ in seed_rows()}
+        result = analyze("Because the algorithm processes data.", dictionary, method="transfer")
+        self.assertEqual(result["translated_text"], "Weil der Algorithmus Daten verarbeitet.")
+        self.assertEqual(result["method"], "transfer")
 
     def test_empty_domain_entry_does_not_hide_general_translation(self):
         with Session(self.app.extensions["db_engine"]) as db:

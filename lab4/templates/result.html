@@ -17,7 +17,7 @@
 {% endmacro %}
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-  <div><h1 class="h3 mb-1">{{ run.title }}</h1><div class="text-muted">{{ domains[run.domain] }} · {{ run.created_at.strftime('%d.%m.%Y %H:%M') }}</div></div>
+  <div><h1 class="h3 mb-1">{{ run.title }}</h1><div class="text-muted">{{ domains[run.domain] }} · {{ methods.get(run.result.get('method'), methods['direct']) }} · {{ run.created_at.strftime('%d.%m.%Y %H:%M') }}</div></div>
   <div class="d-flex gap-2">
     <a class="btn btn-outline-primary" href="{{ url_for('export_run', run_id=run.id) }}">Скачать TXT</a>
     <a class="btn btn-outline-secondary" target="_blank" href="{{ url_for('print_run', run_id=run.id) }}">Распечатать</a>
@@ -31,6 +31,12 @@
   <div class="col-lg-6"><div class="card h-100"><div class="card-header">Исходный текст</div><div class="card-body preserve">{{ run.source_text }}</div></div></div>
   <div class="col-lg-6"><div class="card h-100"><div class="card-header">Перевод</div><div class="card-body preserve">{{ run.translated_text }}</div></div></div>
 </div>
+{% if run.result.get('unknown') %}
+<p class="small text-muted mb-4">Слова в обозначении <code>[[слово]]</code> не найдены в словаре. Они добавлены в редактор словаря, где для них можно указать перевод.</p>
+{% endif %}
+{% if run.result.get('method') == 'transfer' %}
+<p class="small text-muted mb-4"><strong>Этапы непрямого перевода:</strong> анализ английского предложения и POS-тегов → трансфер лексических единиц и синтаксических ролей → синтез немецкой фразы по правилам порядка слов.</p>
+{% endif %}
 <ul class="nav nav-tabs mb-3" role="tablist">
   <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#words" type="button" role="tab">1. Частотный словарь</button></li>
   <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tree" type="button" role="tab">2. Синтаксическое дерево</button></li>
